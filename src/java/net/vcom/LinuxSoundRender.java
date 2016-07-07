@@ -192,7 +192,7 @@ public class LinuxSoundRender implements SoundRenderI
 
         // finally, run ecasound on the chain file
         Util.run("ecasound-new -z:mixmode,sum -s:" + chainName);
-        Util.run("lame "
+        Util.run("lame --quiet "
             + workRootName + "/final-sound/final-sound.wav "
             + workRootName + "/final-sound/final-sound.mp3"
             );

@@ -261,7 +261,7 @@ public class LinuxVideoRender implements VideoRenderI
         }
 
         // now we run the video transcode
-        Util.run("transcode -z --use_rgb -g " + xSize + "x" + ySize
+        Util.run("transcode -k --use_rgb -g " + xSize + "x" + ySize
             + " -i " + workRootName + "/filenames-batch" + Util.padLeft(batch)
             + " -x imlist,null -y xvid,null -f 15 "
             + " -o " + workRootName + "/work-videos/video-batch"
