@@ -1,13 +1,11 @@
 
-/*****************************************************************************
+/**************************************************************************
  *
  * VComFrames: video compositor
  *
- * source file: LinuxVideoRender.java
+ * source file: RenderVideo_transcode.java
  * package: net.vcom
  *
- * version 0.3
- * 2005-06-01
  * Copyright (c) 2005, Denis McLaughlin
  * Released under the GPL license, version 2
  *
@@ -24,7 +22,8 @@ import java.io.OutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.Date;
@@ -50,9 +49,9 @@ import org.apache.tools.ant.DirectoryScanner;
 
 /**
  * This program takes a per-frame xml file and generates the corresponding
- * video.
+ * video using transcode.
  */
-public class LinuxVideoRender implements VideoRenderI
+public class RenderVideo_transcode implements RenderVideoI
 {
     // these are some variables to hold some video-wide values
     private String workRootName = null;
@@ -68,6 +67,12 @@ public class LinuxVideoRender implements VideoRenderI
     private long encodeStartTime = 0;
     private long encodeStopTime = 0;
 
+    // the output command file
+    private BufferedWriter cmds = null;
+
+    // list of partial avis
+    List partialVideos = null;
+
 
     /**
      * This reads the final images from the work dir, and makes a video
@@ -79,6 +84,9 @@ public class LinuxVideoRender implements VideoRenderI
         partialVideoCount = 0;
         skippedPartialVideoCount = 0;
 
+        // null out the partialVideos list, in case we're being called twice
+        partialVideos = new ArrayList();
+
         // track how much time we spend encoding
         encodeStartTime = System.currentTimeMillis();
 
@@ -86,33 +94,44 @@ public class LinuxVideoRender implements VideoRenderI
         Util.validateFrames(root);
 
         // parse out the atts and children
-        xSize = Integer.parseInt(root.getAttributeValue("xsize"));
-        ySize = Integer.parseInt(root.getAttributeValue("ysize"));
-        bgColor = root.getAttributeValue("bgcolor");
+        xSize = 720;
+        if ( root.getAttributeValue("xsize") != null )
+        { xSize = Integer.parseInt(root.getAttributeValue("xsize")); }
+
+        ySize = 480;
+        if ( root.getAttributeValue("ysize") != null )
+        { ySize = Integer.parseInt(root.getAttributeValue("ysize")); }
+
+        bgColor = "white";
+        if ( root.getAttributeValue("bgcolor") != null )
+        { bgColor = root.getAttributeValue("bgcolor"); }
+
         List frameChildren = root.getChildren("frame");
         List soundChildren = root.getChildren("sound");
 
-        // set some default values
-        if ( xSize < 1 )
-        { xSize = 720; }
-        if ( ySize < 1 )
-        { ySize = 480; }
-        if ( bgColor == null )
-        { bgColor = "white"; }
-
         // parse out the final and work directory from the frames attributes
-        workRootName = root.getAttributeValue("workroot");
-        finalRootName = root.getAttributeValue("finalroot");
+        workRootName = "./work";
+        if ( root.getAttributeValue("workroot") != null )
+        { workRootName = root.getAttributeValue("workroot"); }
 
-        // default the workRootName to ./work and finalRootName to ./final
-        if ( workRootName == null )
-        { workRootName = "./work"; }
-        if ( finalRootName == null )
         { finalRootName = "./final"; }
+        if ( root.getAttributeValue("finalroot") != null )
+        { finalRootName = root.getAttributeValue("finalroot"); }
 
         // create the directories
         Util.mkdir(workRootName + "/work-videos");
         Util.mkdir(finalRootName);
+
+        // if we're not executing commands, but instead printing them
+        try
+        {
+            if ( System.getProperty("vcom.cmd.execute").equals("false") )
+            {
+                cmds = new BufferedWriter(
+                    new FileWriter(workRootName + "/encode-cmds"));
+            }
+        }
+        catch (IOException e) { };
 
         // make a directory scanner for our files
         DirectoryScanner scanner = new DirectoryScanner();
@@ -126,6 +145,13 @@ public class LinuxVideoRender implements VideoRenderI
 
         // record the stop time
         encodeStopTime = System.currentTimeMillis();
+
+        // if we're printing out the commands, close the file
+        try
+        {
+            if ( System.getProperty("vcom.cmd.execute").equals("false") )
+            { cmds.close(); }
+        } catch (IOException e) { };
     }
 
 
@@ -192,13 +218,19 @@ public class LinuxVideoRender implements VideoRenderI
 
 
     /**
-     * This takes an array of file names and creates a partial video from them
+     * This takes an array of file names and creates a partial video from
+     * them
      */
     private void renderPartialVideo(int batch, List fileBatch)
     {
         // get a File on the to-be-created partial video
-        File partialVideo = new File( workRootName + "/work-videos/video-batch"
+        String partialVideoName = new String(
+            workRootName + "/work-videos/video-batch"
             + Util.padLeft(batch) + ".avi" );
+        File partialVideo = new File(partialVideoName);
+
+        // add the name of this partial Avi to the list
+        partialVideos.add(partialVideoName);
 
         // if the partial video exists
         if ( partialVideo.exists() )
@@ -211,13 +243,11 @@ public class LinuxVideoRender implements VideoRenderI
             Iterator i = fileBatch.iterator();
             while ( i.hasNext() )
             {
-                File image =
-                    new File(workRootName + "/final-images/" +(String)i.next());
+                File image = new File(
+                    workRootName + "/final-images/" +(String)i.next());
 
                 if ( image.lastModified() > partialVideo.lastModified() )
-                {
-                    allOlder = false;
-                }
+                { allOlder = false; }
             }
 
             // if all of the images are older than the video, skip creating
@@ -242,8 +272,8 @@ public class LinuxVideoRender implements VideoRenderI
             while ( i.hasNext() )
             {
                 // store the filenames, preceded by the work path
-                fileNames.write(
-                    (workRootName + "/final-images/" + (String)i.next() + "\n")
+                fileNames.write( (workRootName + "/final-images/"
+                    + (String)i.next() + "\n")
                         .getBytes() );
             }
         }
@@ -260,13 +290,17 @@ public class LinuxVideoRender implements VideoRenderI
             System.exit(1);
         }
 
-        // now we run the video transcode
-        Util.run("transcode -k --use_rgb -g " + xSize + "x" + ySize
-            + " -i " + workRootName + "/filenames-batch" + Util.padLeft(batch)
-            + " -x imlist,null -y xvid,null -f 15 "
-            + " -o " + workRootName + "/work-videos/video-batch"
-            + Util.padLeft(batch)
-            + ".avi -H 0");
+        // prepare the command to encode to video
+        String cmd = "transcode --use_rgb -g " + xSize + "x" + ySize
+                + " -i "+workRootName+"/filenames-batch"+Util.padLeft(batch)
+                + " -x imlist,null -y xvid,null -f 15 "
+                + " -o " + partialVideo + " -H 0";
+
+        // and either print the command to cmds, or execute it
+        if ( System.getProperty("vcom.cmd.execute").equals("false") )
+        { try { cmds.write(cmd + "\n"); } catch (IOException e) { } }
+        else
+        { Util.run(cmd); }
 
         return;
     }
@@ -278,28 +312,24 @@ public class LinuxVideoRender implements VideoRenderI
      */
     private void stitchVideo()
     {
-        // get the list of videos to stitch
-        File dir = new File(workRootName + "/work-videos");
-        List videoFiles = Arrays.asList(dir.list());
-        Collections.sort(videoFiles);
-
         // store the names of the videos in a file
         try
         {
             // make a file to hold the file names
-            FileOutputStream videoNames =
-                new FileOutputStream(
-                    new File(workRootName + "/videonames") );
+            BufferedWriter videoNames = new BufferedWriter(
+                new FileWriter(workRootName + "/videonames"));
+
 
             // dunk the video names into a file
-            Iterator i = videoFiles.iterator();
+            Iterator i = partialVideos.iterator();
             while ( i.hasNext() )
             {
-                // store the filenames, preceded by the work path
-                videoNames.write(
-                    (workRootName + "/work-videos/" + (String)i.next() + "\n")
-                        .getBytes() );
+                // store the filename
+                videoNames.write( (String)i.next()+"\n" );
             }
+
+            // close the file
+            videoNames.close();
         }
         catch(FileNotFoundException e)
         {
@@ -331,9 +361,18 @@ public class LinuxVideoRender implements VideoRenderI
         cmd.add("-I");
         cmd.add(workRootName + "/videonames");
 
-        // convert the list to an array and run it
+        // convert the list to an array and run or print it
+        String[] cmdArray = (String[]) cmd.toArray(new String[0]);
         System.out.println("stitching video");
-        Util.run((String[]) cmd.toArray(new String[0]));
+        if ( System.getProperty("vcom.cmd.execute").equals("false") )
+        {
+            StringBuffer s = new StringBuffer("");
+            for ( int i=0; i<cmdArray.length; i++)
+            { s.append(cmdArray[i]+" "); }
+            try { cmds.write(s + "\n"); } catch (IOException e) { };
+        }
+        else
+        { Util.run(cmdArray); }
     }
 
 

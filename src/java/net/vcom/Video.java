@@ -1,13 +1,11 @@
 
-/*****************************************************************************
+/**************************************************************************
  *
  * VCom: video compositor
  *
  * source file: Video.java
  * package: net.vcom
  *
- * version 0.3
- * 2005-06-01
  * Copyright (c) 2005, Denis McLaughlin
  * Released under the GPL license, version 2
  *
@@ -696,6 +694,7 @@ public class Video
             frames.addContent( getFrame(frame) );
             count++;
         }
+        System.out.println("\n");
 
         // step through all sound clips
         i = soundClips.iterator();

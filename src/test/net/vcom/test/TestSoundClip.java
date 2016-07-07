@@ -1,13 +1,11 @@
 
-/*****************************************************************************
+/**************************************************************************
  *
  * VCom: video compositor test
  *
  * source file: TestSoundClip.java  
  * package: net.vcom
  *
- * version 0.3
- * 2005-06-01
  * Copyright (c) 2005, Denis McLaughlin
  * Released under the GPL license, version 2
  *  

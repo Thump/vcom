@@ -1,13 +1,11 @@
 
-/*****************************************************************************
+/**************************************************************************
  *
  * VComFrames: video compositor
  *
- * source file: LinuxFrameRender.java
+ * source file: RenderFrames_imagemagick.java
  * package: net.vcom
  *
- * version 0.3
- * 2005-06-01
  * Copyright (c) 2005, Denis McLaughlin
  * Released under the GPL license, version 2
  *
@@ -49,9 +47,9 @@ import org.apache.tools.ant.DirectoryScanner;
 
 /**
  * This program takes a per-frame xml file and generates the corresponding
- * video.
+ * frames using Image Magick.
  */
-public class LinuxFrameRender implements FrameRenderI
+public class RenderFrames_imagemagick implements RenderFramesI
 {
     // these are some variables to hold some video-wide values
     private String workRootName = null;
@@ -81,7 +79,8 @@ public class LinuxFrameRender implements FrameRenderI
         imageCount = 0;
         skippedImageCount = 0;
 
-        System.out.println("rendering frames with LinuxFrameRender");
+        System.out.println("rendering frames with "
+            + this.getClass().getName() );
 
         // get start time
         renderStartTime = System.currentTimeMillis();
@@ -90,9 +89,15 @@ public class LinuxFrameRender implements FrameRenderI
         Util.validateFrames(root);
 
         // parse out some atts and children
-        xSize = Integer.parseInt(root.getAttributeValue("xsize"));
-        ySize = Integer.parseInt(root.getAttributeValue("ysize"));
-        bgColor = root.getAttributeValue("bgcolor");
+        if ( root.getAttributeValue("xsize") != null )
+        { xSize = Integer.parseInt(root.getAttributeValue("xsize")); }
+
+        if ( root.getAttributeValue("ysize") != null )
+        { ySize = Integer.parseInt(root.getAttributeValue("ysize")); }
+
+        if ( root.getAttributeValue("bgcolor") != null )
+        { bgColor = root.getAttributeValue("bgcolor"); }
+
         List frameChildren = root.getChildren("frame");
         List soundChildren = root.getChildren("sound");
 
@@ -105,8 +110,11 @@ public class LinuxFrameRender implements FrameRenderI
         { bgColor = "white"; }
 
         // parse out the final and work directory from the frames attributes
-        workRootName = root.getAttributeValue("workroot");
-        finalRootName = root.getAttributeValue("finalroot");
+        if ( root.getAttributeValue("workroot") != null )
+        { workRootName = root.getAttributeValue("workroot"); }
+
+        if ( root.getAttributeValue("finalroot") != null )
+        { finalRootName = root.getAttributeValue("finalroot"); }
 
         // default the workRootName to ./work and finalRootName to ./final
         if ( workRootName == null )
@@ -326,32 +334,26 @@ System.out.print("frame " + frameCount + " / " + frameChildren.size() + "\r");
 
         StringBuffer s = new StringBuffer();
 
-        // image must have an xposition and yposition
-        String xposition = image.getAttributeValue("xposition");
-        String yposition = image.getAttributeValue("yposition");
-        if ( xposition == null || yposition == null )
-        {
-            System.err.println("image must have xposition and yposition name");
-            System.exit(1);
-        }
+        // get image's xposition and yposition
+        String xposition="0";
+        if ( image.getAttributeValue("xposition") != null )
+        { xposition = image.getAttributeValue("xposition"); }
+
+        String yposition="0";
+        if ( image.getAttributeValue("yposition") != null )
+        { yposition = image.getAttributeValue("yposition"); }
         s.append("-geometry +" + xposition + "+" + yposition + " ");
 
-        // image must have a rotation
-        String rotation = image.getAttributeValue("rotation");
-        if ( rotation == null )
-        {
-            System.err.println("image must have rotation");
-            System.exit(1);
-        }
+        // get image's rotation
+        String rotation = "0";
+        if ( image.getAttributeValue("rotation") != null )
+        { rotation = image.getAttributeValue("rotation"); }
         s.append("-rotate " + rotation + " ");
 
-        // image must have an opacity
-        String opacity = image.getAttributeValue("opacity");
-        if ( opacity == null )
-        {
-            System.err.println("image must have opacity");
-            System.exit(1);
-        }
+        // get image's opacity
+        String opacity = "100";
+        if ( image.getAttributeValue("opacity") != null )
+        { opacity = image.getAttributeValue("opacity"); }
         s.append("-dissolve " + opacity + " ");
 
         return s.toString();

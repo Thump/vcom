@@ -1,13 +1,11 @@
 
-/*****************************************************************************
+/**************************************************************************
  *
  * VCom: video compositor test
  *
- * source file: TestVComLinuxRender.java  
+ * source file: TestRenderVideo.java  
  * package: net.vcom
  *
- * version 0.3
- * 2005-06-01
  * Copyright (c) 2005, Denis McLaughlin
  * Released under the GPL license, version 2
  *  
@@ -27,32 +25,43 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
 
-import net.vcom.LinuxFrameRender;
-import net.vcom.FrameRenderI;
-import net.vcom.LinuxVideoRender;
-import net.vcom.VideoRenderI;
+import net.vcom.RenderFrames_imagemagick;
+import net.vcom.RenderFramesI;
+import net.vcom.RenderVideo_transcode;
+import net.vcom.RenderVideoI;
 import net.vcom.Video;
+import net.vcom.Util;
 
 
 /**
- * This class runs tests against the ImageClip class.
+ * This class runs tests for rendering to video
  */
-public class TestLinuxVideoRender extends TestCase
+public class TestRenderVideo extends TestCase
 {
     /**
      * Checks that the ImageClip constructor returns a non-null object
      */
     public void testConstructor()
     {
-        LinuxFrameRender fr = null;
-        LinuxVideoRender vr = null;
+        RenderFrames_imagemagick fr = null;
+        RenderVideo_transcode vr = null;
 
         // check we can create our renderers
-        fr = new LinuxFrameRender();
-        assertNotNull("null LinuxFrameRender returned", fr);
-        vr = new LinuxVideoRender();
-        assertNotNull("null LinuxVideoRender returned", vr);
+        fr = new RenderFrames_imagemagick();
+        assertNotNull("null RenderFrames_imagemagick returned", fr);
+        vr = new RenderVideo_transcode();
+        assertNotNull("null RenderVideo_transcode returned", vr);
     }
+
+
+    /**
+     * A test setup routine
+     */
+    public void setUp()
+    {
+        Util.loadProperties();
+    }
+
 
 
     /**
@@ -61,8 +70,8 @@ public class TestLinuxVideoRender extends TestCase
      */
     public void testEncode()
     {
-        LinuxFrameRender fr = null;
-        LinuxVideoRender vr = null;
+        RenderFrames_imagemagick fr = null;
+        RenderVideo_transcode vr = null;
         Video v = null;
         SAXBuilder builder = new SAXBuilder();
         Document doc = null;
@@ -71,13 +80,13 @@ public class TestLinuxVideoRender extends TestCase
         try
         {
             // create our renderers
-            fr = new LinuxFrameRender();
-            assertNotNull("null LinuxFrameRender returned", fr);
-            vr = new LinuxVideoRender();
-            assertNotNull("null LinuxVideoRender returned", vr);
+            fr = new RenderFrames_imagemagick();
+            assertNotNull("null RenderFrames_imagemagick returned", fr);
+            vr = new RenderVideo_transcode();
+            assertNotNull("null RenderVideo_transcode returned", vr);
 
             // create a video from xml
-            String xml = new String("<video name='name1' xsize='320' ysize='240' bgcolor='white' fps='30' encoder='xvid' encoderopts='opt1' workroot='build/test-encode/work' finalroot='build/test-encode/final' > <!-- white background --> <imageclip> <sourcefiles dir='resources/images/'> <include name='white-*.png'/> </sourcefiles> <sourceseq> <seq start='0' stop='29'/> </sourceseq> <targetseq start='0'/> </imageclip> <!-- black dot --> <imageclip> <sourcefiles dir='resources/images'> <include name='dot-*.png'/> </sourcefiles> <sourceseq> <seq start='0' stop='29'/> </sourceseq> <targetseq start='0'/> <xposition> <seq start='0' stop='150' step='5'/> </xposition> <yposition> <seq start='0' stop='150' step='5'/> </yposition> </imageclip> <soundclip> <source file='foo.wav' start='0.0' stop='1.0' /> <target start='0.0'/> </soundclip> </video>");
+            String xml = new String("<video name='name1' xsize='320' ysize='240' bgcolor='white' fps='30' encoder='xvid' encoderopts='opt1' workroot='build/test-encode/work' finalroot='build/test-encode/final' > <!-- white background --> <imageclip> <sourcefiles dir='resources/images/'> <include name='white-*.png'/> </sourcefiles> <sourceseq> <seq start='0' stop='29'/> </sourceseq> <targetseq start='0'/> </imageclip> <!-- black dot --> <imageclip> <sourcefiles dir='resources/images'> <include name='dot-*.png'/> </sourcefiles> <sourceseq> <seq start='0' stop='29'/> </sourceseq> <targetseq start='0'/> <parameter name='xposition'> <seq start='0' stop='150' step='5'/> </parameter> <parameter name='yposition'> <seq start='0' stop='150' step='5'/> </parameter> </imageclip> <soundclip> <source file='foo.wav' start='0.0' stop='1.0' /> <target start='0.0'/> </soundclip> </video>");
 
             // turn the string into a char[] and build the Document from it
             doc = builder.build( new CharArrayReader(xml.toCharArray()) );
@@ -137,7 +146,7 @@ public class TestLinuxVideoRender extends TestCase
             // confirm the right number of frames and images were tracked
             assertEquals("wrong number of partial videos", 3,
                 vr.partialVideoCount);
-            assertEquals("wrong number of skipped partial videos", 3,
+            assertEquals("wrong number of skipped partial videos on redo", 3,
                 vr.skippedPartialVideoCount);
 
             // now we touch one file and re-render: because we touched a file,

@@ -1,17 +1,15 @@
 
-/*****************************************************************************
+/**************************************************************************
  *
  * VCom: video compositor
  *
  * source file: Util.java
  * package: net.vcom
  *
- * version 0.3
- * 2005-06-01
  * Copyright (c) 2005, Denis McLaughlin
  * Released under the GPL license, version 2
  *
- *****************************************************************************/
+ */
 
 package net.vcom;
 
@@ -379,6 +377,7 @@ public class Util
     {
         // set some default properties
         System.setProperty("vcom.cmd.debug", "false");
+        System.setProperty("vcom.cmd.execute", "true");
 
         try
         {
@@ -425,5 +424,60 @@ public class Util
             System.err.println("non-sound/frame children of frames");
             System.exit(1);
         }
+    }
+
+
+
+    /**
+     * This takes a videoElement and returns a framesElement.
+     */
+    public static Element prepareFramesElement(Element videoElement)
+    {
+        // for rendering, we need to process the videoElement to pull out
+        // the working directory, and then check that there is a frames.xml
+        // file in the working directory
+        String workRoot = videoElement.getAttributeValue("workroot");
+        if ( workRoot == null )
+        {
+            System.err.println(
+                "unable to find workroot attribute forgot null root for"
+                + " video root tag\n");
+            System.exit(1);
+        }
+
+        // now look up the frames file
+        File file = new File( workRoot + "/frames.xml" );
+
+        // if there is no frames file, get panicky
+        if ( ! file.exists() )
+        {
+            System.err.println(
+                "unable to find " + workRoot + "/frames.xml:\n"
+                + "have you processed the video yet?\n");
+            System.exit(1);
+        }
+
+        // process the specified xml file and get the root element
+        Document doc = Util.jellyReadDoc(workRoot + "/frames.xml");
+        Element framesElement = doc.getRootElement();
+
+        // if the root is null, that's bad
+        if ( framesElement == null )
+        {
+            System.err.println(
+                "got null root for " + workRoot + "/frames.xml");
+            System.exit(1);
+        }
+
+        // if we're not executing commands, but just printing them, we
+        // need to get rid of the old cmds file, if it exists
+        if ( System.getProperty("vcom.cmd.execute").equals("false") )
+        {
+            File cmds = new File( workRoot + "/cmds" );
+            if ( ! cmds.exists() )
+            { cmds.delete(); }
+        }
+
+        return(framesElement);
     }
 }

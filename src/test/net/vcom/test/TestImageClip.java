@@ -1,13 +1,11 @@
 
-/*****************************************************************************
+/**************************************************************************
  *
  * VCom: video compositor test
  *
  * source file: TestImageClip.java  
  * package: net.vcom
  *
- * version 0.3
- * 2005-06-01
  * Copyright (c) 2005, Denis McLaughlin
  * Released under the GPL license, version 2
  *  
@@ -28,6 +26,7 @@ import org.jdom.input.SAXBuilder;
 import net.vcom.ImageClip;
 import net.vcom.Seq;
 import net.vcom.SeqLoop;
+import net.vcom.Parameter;
 
 
 /**
@@ -57,12 +56,8 @@ public class TestImageClip extends TestCase
         DirectoryScanner scanner = new DirectoryScanner();
         Seq sourceSeq = new SeqLoop();
         int targetStart = 1;
-        Seq xPosition = new SeqLoop();
-        Seq yPosition = new SeqLoop();
-        Seq rotation = new SeqLoop();
-        Seq opacity = new SeqLoop();
-        Seq xSize = new SeqLoop();
-        Seq ySize = new SeqLoop();
+        Parameter p1 = new Parameter();
+        Parameter p2 = new Parameter("bar");
 
         // check we can construct a new ImageClip
         ic = new ImageClip();
@@ -78,31 +73,15 @@ public class TestImageClip extends TestCase
 
         // set and check the targetStart
         ic.setTargetStart(targetStart);
-        assertEquals("targetStart not set", targetStart, ic.getTargetStart());
+        assertEquals("targetStart not set",targetStart,ic.getTargetStart());
 
-        // set and check the xPosition
-        ic.setXPosition(xPosition);
-        assertEquals("xPosition not set", xPosition, ic.getXPosition());
+        // set and check anonymous parameter
+        ic.setParameter("foo",p1);
+        assertEquals("parameter not set", p1, ic.getParameter("foo"));
 
-        // set and check the yPosition
-        ic.setYPosition(yPosition);
-        assertEquals("yPosition not set", yPosition, ic.getYPosition());
-
-        // set and check the rotation
-        ic.setRotation(rotation);
-        assertEquals("rotation not set", rotation, ic.getRotation());
-
-        // set and check the opacity
-        ic.setOpacity(opacity);
-        assertEquals("opacity not set", opacity, ic.getOpacity());
-
-        // set and check the xSize
-        ic.setXSize(xSize);
-        assertEquals("xSize not set", xSize, ic.getXSize());
-
-        // set and check the ySize
-        ic.setYSize(ySize);
-        assertEquals("ySize not set", ySize, ic.getYSize());
+        // set and check non-anonymous parameter
+        ic.setParameter("bar",p2);
+        assertEquals("parameter not set", p2, ic.getParameter("bar"));
     }
 
 
@@ -218,7 +197,8 @@ public class TestImageClip extends TestCase
 
 
     /**
-     * Check the Document constructor failure paths for sourceFiles are working
+     * Check the Document constructor failure paths for sourceFiles are
+     * working
      */
     public void testBadSourceFiles()
     {
@@ -418,7 +398,8 @@ public class TestImageClip extends TestCase
 
 
     /**
-     * Check the Document constructor success paths for sourceFiles are working
+     * Check the Document constructor success paths for sourceFiles
+     * are working
      */
     public void testGoodSourceFiles()
     {
@@ -431,7 +412,7 @@ public class TestImageClip extends TestCase
         {
             // create the xml code in a string
             String xml = new String(
-            "<imageclip> <sourcefiles dir='resources/test'> <include name='**'/> <exclude name='baz'/> <exclude name='quux'/> </sourcefiles> </imageclip>");
+            "<imageclip> <sourcefiles dir='resources/test'> <include name='**'/> <exclude name='baz'/> <exclude name='quux'/> </sourcefiles> <sourceseq> <seq start='0'/> </sourceseq> </imageclip>");
 
             // turn the string into a char[] and build the Document from it
             doc = builder.build( new CharArrayReader(xml.toCharArray()) );
@@ -726,20 +707,20 @@ public class TestImageClip extends TestCase
 
 
     /**
-     * Check the Document constructor failure paths for xposition are working
+     * Check the Document constructor failure paths for sourceSeq are working
      */
-    public void testBadXPositionConstructor()
+    public void testBadParameterConstructor()
     {
         ImageClip ic = null;
         SAXBuilder builder = new SAXBuilder();
         Document doc = null;
 
-        // should fail if <xposition> has an attribute
+        // should fail if <parameter> has more than one attribute
         try
         {
             // create the xml code in a string
             String xml = new String(
-            "<imageclip> <xposition foo='bar'> </xposition> </imageclip>");
+            "<imageclip> <parameter name='foo' att2='bar'>  </parameter> </imageclip>");
 
             // turn the string into a char[] and build the Document from it
             doc = builder.build( new CharArrayReader(xml.toCharArray()) );
@@ -748,7 +729,8 @@ public class TestImageClip extends TestCase
             ic = new ImageClip(doc);
 
             // if we get here, that's bad
-            assertNotNull("xposition with attribute succeeded", null);
+            assertNotNull("parameter with multiple attributes succeeded",
+                null);
         }
         catch(IllegalArgumentException e)
         {}
@@ -757,12 +739,12 @@ public class TestImageClip extends TestCase
             assertTrue("got exception: " + e, false);
         }
 
-        // should fail if <xposition> has no children
+        // should fail if <parameter> has no children
         try
         {
             // create the xml code in a string
             String xml = new String(
-            "<imageclip> <xposition> </xposition> </imageclip>");
+            "<imageclip> <parameter name='foo'> </parameter> </imageclip>");
 
             // turn the string into a char[] and build the Document from it
             doc = builder.build( new CharArrayReader(xml.toCharArray()) );
@@ -771,7 +753,7 @@ public class TestImageClip extends TestCase
             ic = new ImageClip(doc);
 
             // if we get here, that's bad
-            assertNotNull("xposition with no children succeeded", null);
+            assertNotNull("parameter with no children succeeded", null);
         }
         catch(IllegalArgumentException e)
         {}
@@ -780,12 +762,12 @@ public class TestImageClip extends TestCase
             assertTrue("got exception: " + e, false);
         }
 
-        // should fail if <xposition> has more than one child
+        // should fail if <parameter> has more than one child
         try
         {
             // create the xml code in a string
             String xml = new String(
-            "<imageclip> <xposition> <foo/> <bar/> </xposition> </imageclip>");
+            "<imageclip> <parameter name='foo'> <seq start='1' stop='2'/> <seq start='1' stop='2'/> </parameter> </imageclip>");
 
             // turn the string into a char[] and build the Document from it
             doc = builder.build( new CharArrayReader(xml.toCharArray()) );
@@ -794,7 +776,8 @@ public class TestImageClip extends TestCase
             ic = new ImageClip(doc);
 
             // if we get here, that's bad
-            assertNotNull("xposition with multiple children succeeded", null);
+            assertNotNull("parameter with multiple children succeeded",
+                null);
         }
         catch(IllegalArgumentException e)
         {}
@@ -803,12 +786,12 @@ public class TestImageClip extends TestCase
             assertTrue("got exception: " + e, false);
         }
 
-        // should fail if <xposition> has non seq child
+        // should fail if <parameter> has non seq child
         try
         {
             // create the xml code in a string
             String xml = new String(
-            "<imageclip> <xposition> <foo/> </xposition> </imageclip>");
+            "<imageclip> <parameter name='foo'> <foo start='1' stop='2'/> </parameter> </imageclip>");
 
             // turn the string into a char[] and build the Document from it
             doc = builder.build( new CharArrayReader(xml.toCharArray()) );
@@ -817,7 +800,7 @@ public class TestImageClip extends TestCase
             ic = new ImageClip(doc);
 
             // if we get here, that's bad
-            assertNotNull("xposition with non-seq child succeeded", null);
+            assertNotNull("parameter with non-seq child succeeded", null);
         }
         catch(IllegalArgumentException e)
         {}
@@ -829,20 +812,20 @@ public class TestImageClip extends TestCase
 
 
     /**
-     * Check the Document constructor success path for xposition works
+     * Check the Document constructor success path for the parameters works
      */
-    public void testGoodXPositionConstructor()
+    public void testGoodParameterConstructor()
     {
         ImageClip ic = null;
         SAXBuilder builder = new SAXBuilder();
         Document doc = null;
 
-        // should work if <xposition> has an attribute
+        // should work if <parameter> has a name and subseq
         try
         {
             // create the xml code in a string
             String xml = new String(
-            "<imageclip> <xposition> <seq start='1' stop='2'/> </xposition> </imageclip>");
+            "<imageclip> <parameter name='foo'> <seq start='1' stop='2'/> </parameter> </imageclip>");
 
             // turn the string into a char[] and build the Document from it
             doc = builder.build( new CharArrayReader(xml.toCharArray()) );
@@ -850,13 +833,55 @@ public class TestImageClip extends TestCase
             // create a seq from the document
             ic = new ImageClip(doc);
 
-            // if we get here, that's bad
-            assertNotNull("simple xposition create failed", ic);
+            // check we got a valid ic
+            assertNotNull("simple parameter create failed", ic);
 
-            // get the sourceSeq
-            Seq ss = ic.getXPosition();
-            assertEquals("wrong start in xposition", 1, ss.getStart());
-            assertEquals("wrong stop in xposition", 2, ss.getStop());
+            // get the parameter we defined
+            Parameter p = ic.getParameter("foo");
+            assertNotNull("got null parameter", p);
+
+            // check the parameters sequence is defined
+            Seq s = p.getSeq();
+            assertNotNull("got null seq", s);
+
+            // check the sequence's start and stop are correct
+            assertEquals("wrong start in parameter", 1, s.getStart());
+            assertEquals("wrong stop in parameter", 2, s.getStop());
+        }
+        catch(Exception e)
+        {
+            assertTrue("got exception: " + e, false);
+        }
+
+        // check that we can override sequences
+        try
+        {
+            // create the xml code in a string
+            String xml = new String(
+            "<imageclip> <parameter name='foo'> <seq start='1' stop='2'/> </parameter> <parameter name='foo'> <seq start='9' stop='99'/> </parameter> </imageclip>");
+
+            // turn the string into a char[] and build the Document from it
+            doc = builder.build( new CharArrayReader(xml.toCharArray()) );
+
+            // create a seq from the document
+            ic = new ImageClip(doc);
+
+            // check we got a valid ic
+            assertNotNull("simple parameter create failed", ic);
+
+            // get the parameter we defined
+            Parameter p = ic.getParameter("foo");
+            assertNotNull("got null parameter", p);
+
+            // check the parameters sequence is defined
+            Seq s = p.getSeq();
+            assertNotNull("got null seq", s);
+
+            // check the sequence's start and stop are correct
+            assertEquals("wrong start in parameter override", 9,
+                s.getStart());
+            assertEquals("wrong stop in parameter override", 99,
+                s.getStop());
         }
         catch(Exception e)
         {
@@ -864,700 +889,49 @@ public class TestImageClip extends TestCase
         }
     }
 
-
     /**
-     * Check the Document constructor failure paths for yposition are working
+     * Check the Document constructor flags a parameter with an invalid
+     * seq correctly
      */
-    public void testBadYPositionConstructor()
+    public void testRecursiveValid()
     {
         ImageClip ic = null;
         SAXBuilder builder = new SAXBuilder();
         Document doc = null;
 
-        // should fail if <yposition> has an attribute
+        // create an IC with a parameter with an invalid seq: this should
+        // only be caught when valid() is called, so this try should
+        // succeed
         try
         {
             // create the xml code in a string
             String xml = new String(
-            "<imageclip> <yposition foo='bar'> </yposition> </imageclip>");
+            "<imageclip> <sourcefiles dir='resources/images'> <include name='**'/> </sourcefiles> <sourceseq> <seq start='5' stop='10'/> </sourceseq> <parameter name='foo'> <seq start='2' stop='1'/> </parameter> </imageclip>");
+
 
             // turn the string into a char[] and build the Document from it
             doc = builder.build( new CharArrayReader(xml.toCharArray()) );
 
             // create a seq from the document
             ic = new ImageClip(doc);
+        }
+        catch(Exception e)
+        {
+            assertTrue("got exception: " + e, false);
+        }
+
+        // now call valid: this should fail
+        try
+        {
+            // call valid()
+            ic.valid();
 
             // if we get here, that's bad
-            assertNotNull("yposition with attribute succeeded", null);
+            assertNotNull("parameter with bad seq succeeded",
+                null);
         }
         catch(IllegalArgumentException e)
         {}
-        catch(Exception e)
-        {
-            assertTrue("got exception: " + e, false);
-        }
-
-        // should fail if <yposition> has no children
-        try
-        {
-            // create the xml code in a string
-            String xml = new String(
-            "<imageclip> <yposition> </yposition> </imageclip>");
-
-            // turn the string into a char[] and build the Document from it
-            doc = builder.build( new CharArrayReader(xml.toCharArray()) );
-
-            // create a seq from the document
-            ic = new ImageClip(doc);
-
-            // if we get here, that's bad
-            assertNotNull("yposition with no children succeeded", null);
-        }
-        catch(IllegalArgumentException e)
-        {}
-        catch(Exception e)
-        {
-            assertTrue("got exception: " + e, false);
-        }
-
-        // should fail if <yposition> has more than one child
-        try
-        {
-            // create the xml code in a string
-            String xml = new String(
-            "<imageclip> <yposition> <foo/> <bar/> </yposition> </imageclip>");
-
-            // turn the string into a char[] and build the Document from it
-            doc = builder.build( new CharArrayReader(xml.toCharArray()) );
-
-            // create a seq from the document
-            ic = new ImageClip(doc);
-
-            // if we get here, that's bad
-            assertNotNull("yposition with multiple children succeeded", null);
-        }
-        catch(IllegalArgumentException e)
-        {}
-        catch(Exception e)
-        {
-            assertTrue("got exception: " + e, false);
-        }
-
-        // should fail if <yposition> has non seq child
-        try
-        {
-            // create the xml code in a string
-            String xml = new String(
-            "<imageclip> <yposition> <foo/> </yposition> </imageclip>");
-
-            // turn the string into a char[] and build the Document from it
-            doc = builder.build( new CharArrayReader(xml.toCharArray()) );
-
-            // create a seq from the document
-            ic = new ImageClip(doc);
-
-            // if we get here, that's bad
-            assertNotNull("yposition with non-seq child succeeded", null);
-        }
-        catch(IllegalArgumentException e)
-        {}
-        catch(Exception e)
-        {
-            assertTrue("got exception: " + e, false);
-        }
-    }
-
-
-    /**
-     * Check the Document constructor success path for yposition works
-     */
-    public void testGoodYPositionConstructor()
-    {
-        ImageClip ic = null;
-        SAXBuilder builder = new SAXBuilder();
-        Document doc = null;
-
-        // should work if <yposition> has an attribute
-        try
-        {
-            // create the xml code in a string
-            String xml = new String(
-            "<imageclip> <yposition> <seq start='1' stop='2'/> </yposition> </imageclip>");
-
-            // turn the string into a char[] and build the Document from it
-            doc = builder.build( new CharArrayReader(xml.toCharArray()) );
-
-            // create a seq from the document
-            ic = new ImageClip(doc);
-
-            // if we get here, that's bad
-            assertNotNull("simple yposition create failed", ic);
-
-            // get the sourceSeq
-            Seq ss = ic.getYPosition();
-            assertEquals("wrong start in yposition", 1, ss.getStart());
-            assertEquals("wrong stop in yposition", 2, ss.getStop());
-        }
-        catch(Exception e)
-        {
-            assertTrue("got exception: " + e, false);
-        }
-    }
-
-
-    /**
-     * Check the Document constructor failure paths for xsize are working
-     */
-    public void testBadXSizeConstructor()
-    {
-        ImageClip ic = null;
-        SAXBuilder builder = new SAXBuilder();
-        Document doc = null;
-
-        // should fail if <xsize> has an attribute
-        try
-        {
-            // create the xml code in a string
-            String xml = new String(
-            "<imageclip> <xsize foo='bar'> </xsize> </imageclip>");
-
-            // turn the string into a char[] and build the Document from it
-            doc = builder.build( new CharArrayReader(xml.toCharArray()) );
-
-            // create a seq from the document
-            ic = new ImageClip(doc);
-
-            // if we get here, that's bad
-            assertNotNull("xsize with attribute succeeded", null);
-        }
-        catch(IllegalArgumentException e)
-        {}
-        catch(Exception e)
-        {
-            assertTrue("got exception: " + e, false);
-        }
-
-        // should fail if <xsize> has no children
-        try
-        {
-            // create the xml code in a string
-            String xml = new String(
-            "<imageclip> <xsize> </xsize> </imageclip>");
-
-            // turn the string into a char[] and build the Document from it
-            doc = builder.build( new CharArrayReader(xml.toCharArray()) );
-
-            // create a seq from the document
-            ic = new ImageClip(doc);
-
-            // if we get here, that's bad
-            assertNotNull("xsize with no children succeeded", null);
-        }
-        catch(IllegalArgumentException e)
-        {}
-        catch(Exception e)
-        {
-            assertTrue("got exception: " + e, false);
-        }
-
-        // should fail if <xsize> has more than one child
-        try
-        {
-            // create the xml code in a string
-            String xml = new String(
-            "<imageclip> <xsize> <foo/> <bar/> </xsize> </imageclip>");
-
-            // turn the string into a char[] and build the Document from it
-            doc = builder.build( new CharArrayReader(xml.toCharArray()) );
-
-            // create a seq from the document
-            ic = new ImageClip(doc);
-
-            // if we get here, that's bad
-            assertNotNull("xsize with multiple children succeeded", null);
-        }
-        catch(IllegalArgumentException e)
-        {}
-        catch(Exception e)
-        {
-            assertTrue("got exception: " + e, false);
-        }
-
-        // should fail if <xsize> has non seq child
-        try
-        {
-            // create the xml code in a string
-            String xml = new String(
-            "<imageclip> <xsize> <foo/> </xsize> </imageclip>");
-
-            // turn the string into a char[] and build the Document from it
-            doc = builder.build( new CharArrayReader(xml.toCharArray()) );
-
-            // create a seq from the document
-            ic = new ImageClip(doc);
-
-            // if we get here, that's bad
-            assertNotNull("xsize with non-seq child succeeded", null);
-        }
-        catch(IllegalArgumentException e)
-        {}
-        catch(Exception e)
-        {
-            assertTrue("got exception: " + e, false);
-        }
-    }
-
-
-    /**
-     * Check the Document constructor success path for xsize works
-     */
-    public void testGoodXSizeConstructor()
-    {
-        ImageClip ic = null;
-        SAXBuilder builder = new SAXBuilder();
-        Document doc = null;
-
-        // should work if <xsize> has an attribute
-        try
-        {
-            // create the xml code in a string
-            String xml = new String(
-            "<imageclip> <xsize> <seq start='1' stop='2'/> </xsize> </imageclip>");
-
-            // turn the string into a char[] and build the Document from it
-            doc = builder.build( new CharArrayReader(xml.toCharArray()) );
-
-            // create a seq from the document
-            ic = new ImageClip(doc);
-
-            // if we get here, that's bad
-            assertNotNull("simple xsize create failed", ic);
-
-            // get the sourceSeq
-            Seq ss = ic.getXSize();
-            assertEquals("wrong start in xsize", 1, ss.getStart());
-            assertEquals("wrong stop in xsize", 2, ss.getStop());
-        }
-        catch(Exception e)
-        {
-            assertTrue("got exception: " + e, false);
-        }
-    }
-
-
-    /**
-     * Check the Document constructor failure paths for ysize are working
-     */
-    public void testBadYSizeConstructor()
-    {
-        ImageClip ic = null;
-        SAXBuilder builder = new SAXBuilder();
-        Document doc = null;
-
-        // should fail if <ysize> has an attribute
-        try
-        {
-            // create the xml code in a string
-            String xml = new String(
-            "<imageclip> <ysize foo='bar'> </ysize> </imageclip>");
-
-            // turn the string into a char[] and build the Document from it
-            doc = builder.build( new CharArrayReader(xml.toCharArray()) );
-
-            // create a seq from the document
-            ic = new ImageClip(doc);
-
-            // if we get here, that's bad
-            assertNotNull("ysize with attribute succeeded", null);
-        }
-        catch(IllegalArgumentException e)
-        {}
-        catch(Exception e)
-        {
-            assertTrue("got exception: " + e, false);
-        }
-
-        // should fail if <ysize> has no children
-        try
-        {
-            // create the xml code in a string
-            String xml = new String(
-            "<imageclip> <ysize> </ysize> </imageclip>");
-
-            // turn the string into a char[] and build the Document from it
-            doc = builder.build( new CharArrayReader(xml.toCharArray()) );
-
-            // create a seq from the document
-            ic = new ImageClip(doc);
-
-            // if we get here, that's bad
-            assertNotNull("ysize with no children succeeded", null);
-        }
-        catch(IllegalArgumentException e)
-        {}
-        catch(Exception e)
-        {
-            assertTrue("got exception: " + e, false);
-        }
-
-        // should fail if <ysize> has more than one child
-        try
-        {
-            // create the xml code in a string
-            String xml = new String(
-            "<imageclip> <ysize> <foo/> <bar/> </ysize> </imageclip>");
-
-            // turn the string into a char[] and build the Document from it
-            doc = builder.build( new CharArrayReader(xml.toCharArray()) );
-
-            // create a seq from the document
-            ic = new ImageClip(doc);
-
-            // if we get here, that's bad
-            assertNotNull("ysize with multiple children succeeded", null);
-        }
-        catch(IllegalArgumentException e)
-        {}
-        catch(Exception e)
-        {
-            assertTrue("got exception: " + e, false);
-        }
-
-        // should fail if <ysize> has non seq child
-        try
-        {
-            // create the xml code in a string
-            String xml = new String(
-            "<imageclip> <ysize> <foo/> </ysize> </imageclip>");
-
-            // turn the string into a char[] and build the Document from it
-            doc = builder.build( new CharArrayReader(xml.toCharArray()) );
-
-            // create a seq from the document
-            ic = new ImageClip(doc);
-
-            // if we get here, that's bad
-            assertNotNull("ysize with non-seq child succeeded", null);
-        }
-        catch(IllegalArgumentException e)
-        {}
-        catch(Exception e)
-        {
-            assertTrue("got exception: " + e, false);
-        }
-    }
-
-
-    /**
-     * Check the Document constructor success path for ysize works
-     */
-    public void testGoodYSizeConstructor()
-    {
-        ImageClip ic = null;
-        SAXBuilder builder = new SAXBuilder();
-        Document doc = null;
-
-        // should work if <ysize> has an attribute
-        try
-        {
-            // create the xml code in a string
-            String xml = new String(
-            "<imageclip> <ysize> <seq start='1' stop='2'/> </ysize> </imageclip>");
-
-            // turn the string into a char[] and build the Document from it
-            doc = builder.build( new CharArrayReader(xml.toCharArray()) );
-
-            // create a seq from the document
-            ic = new ImageClip(doc);
-
-            // if we get here, that's bad
-            assertNotNull("simple ysize create failed", ic);
-
-            // get the sourceSeq
-            Seq ss = ic.getYSize();
-            assertEquals("wrong start in ysize", 1, ss.getStart());
-            assertEquals("wrong stop in ysize", 2, ss.getStop());
-        }
-        catch(Exception e)
-        {
-            assertTrue("got exception: " + e, false);
-        }
-    }
-
-
-    /**
-     * Check the Document constructor failure paths for rotation are working
-     */
-    public void testBadRotationConstructor()
-    {
-        ImageClip ic = null;
-        SAXBuilder builder = new SAXBuilder();
-        Document doc = null;
-
-        // should fail if <rotation> has an attribute
-        try
-        {
-            // create the xml code in a string
-            String xml = new String(
-            "<imageclip> <rotation foo='bar'> </rotation> </imageclip>");
-
-            // turn the string into a char[] and build the Document from it
-            doc = builder.build( new CharArrayReader(xml.toCharArray()) );
-
-            // create a seq from the document
-            ic = new ImageClip(doc);
-
-            // if we get here, that's bad
-            assertNotNull("rotation with attribute succeeded", null);
-        }
-        catch(IllegalArgumentException e)
-        {}
-        catch(Exception e)
-        {
-            assertTrue("got exception: " + e, false);
-        }
-
-        // should fail if <rotation> has no children
-        try
-        {
-            // create the xml code in a string
-            String xml = new String(
-            "<imageclip> <rotation> </rotation> </imageclip>");
-
-            // turn the string into a char[] and build the Document from it
-            doc = builder.build( new CharArrayReader(xml.toCharArray()) );
-
-            // create a seq from the document
-            ic = new ImageClip(doc);
-
-            // if we get here, that's bad
-            assertNotNull("rotation with no children succeeded", null);
-        }
-        catch(IllegalArgumentException e)
-        {}
-        catch(Exception e)
-        {
-            assertTrue("got exception: " + e, false);
-        }
-
-        // should fail if <rotation> has more than one child
-        try
-        {
-            // create the xml code in a string
-            String xml = new String(
-            "<imageclip> <rotation> <foo/> <bar/> </rotation> </imageclip>");
-
-            // turn the string into a char[] and build the Document from it
-            doc = builder.build( new CharArrayReader(xml.toCharArray()) );
-
-            // create a seq from the document
-            ic = new ImageClip(doc);
-
-            // if we get here, that's bad
-            assertNotNull("rotation with multiple children succeeded", null);
-        }
-        catch(IllegalArgumentException e)
-        {}
-        catch(Exception e)
-        {
-            assertTrue("got exception: " + e, false);
-        }
-
-        // should fail if <rotation> has non seq child
-        try
-        {
-            // create the xml code in a string
-            String xml = new String(
-            "<imageclip> <rotation> <foo/> </rotation> </imageclip>");
-
-            // turn the string into a char[] and build the Document from it
-            doc = builder.build( new CharArrayReader(xml.toCharArray()) );
-
-            // create a seq from the document
-            ic = new ImageClip(doc);
-
-            // if we get here, that's bad
-            assertNotNull("rotation with non-seq child succeeded", null);
-        }
-        catch(IllegalArgumentException e)
-        {}
-        catch(Exception e)
-        {
-            assertTrue("got exception: " + e, false);
-        }
-    }
-
-
-    /**
-     * Check the Document constructor success path for rotation works
-     */
-    public void testGoodRotationConstructor()
-    {
-        ImageClip ic = null;
-        SAXBuilder builder = new SAXBuilder();
-        Document doc = null;
-
-        // should work if <rotation> has an attribute
-        try
-        {
-            // create the xml code in a string
-            String xml = new String(
-            "<imageclip> <rotation> <seq start='1' stop='2'/> </rotation> </imageclip>");
-
-            // turn the string into a char[] and build the Document from it
-            doc = builder.build( new CharArrayReader(xml.toCharArray()) );
-
-            // create a seq from the document
-            ic = new ImageClip(doc);
-
-            // if we get here, that's bad
-            assertNotNull("simple rotation create failed", ic);
-
-            // get the sourceSeq
-            Seq ss = ic.getRotation();
-            assertEquals("wrong start in rotation", 1, ss.getStart());
-            assertEquals("wrong stop in rotation", 2, ss.getStop());
-        }
-        catch(Exception e)
-        {
-            assertTrue("got exception: " + e, false);
-        }
-    }
-
-
-    /**
-     * Check the Document constructor failure paths for opacity are working
-     */
-    public void testBadOpacityConstructor()
-    {
-        ImageClip ic = null;
-        SAXBuilder builder = new SAXBuilder();
-        Document doc = null;
-
-        // should fail if <opacity> has an attribute
-        try
-        {
-            // create the xml code in a string
-            String xml = new String(
-            "<imageclip> <opacity foo='bar'> </opacity> </imageclip>");
-
-            // turn the string into a char[] and build the Document from it
-            doc = builder.build( new CharArrayReader(xml.toCharArray()) );
-
-            // create a seq from the document
-            ic = new ImageClip(doc);
-
-            // if we get here, that's bad
-            assertNotNull("opacity with attribute succeeded", null);
-        }
-        catch(IllegalArgumentException e)
-        {}
-        catch(Exception e)
-        {
-            assertTrue("got exception: " + e, false);
-        }
-
-        // should fail if <opacity> has no children
-        try
-        {
-            // create the xml code in a string
-            String xml = new String(
-            "<imageclip> <opacity> </opacity> </imageclip>");
-
-            // turn the string into a char[] and build the Document from it
-            doc = builder.build( new CharArrayReader(xml.toCharArray()) );
-
-            // create a seq from the document
-            ic = new ImageClip(doc);
-
-            // if we get here, that's bad
-            assertNotNull("opacity with no children succeeded", null);
-        }
-        catch(IllegalArgumentException e)
-        {}
-        catch(Exception e)
-        {
-            assertTrue("got exception: " + e, false);
-        }
-
-        // should fail if <opacity> has more than one child
-        try
-        {
-            // create the xml code in a string
-            String xml = new String(
-            "<imageclip> <opacity> <foo/> <bar/> </opacity> </imageclip>");
-
-            // turn the string into a char[] and build the Document from it
-            doc = builder.build( new CharArrayReader(xml.toCharArray()) );
-
-            // create a seq from the document
-            ic = new ImageClip(doc);
-
-            // if we get here, that's bad
-            assertNotNull("opacity with multiple children succeeded", null);
-        }
-        catch(IllegalArgumentException e)
-        {}
-        catch(Exception e)
-        {
-            assertTrue("got exception: " + e, false);
-        }
-
-        // should fail if <opacity> has non seq child
-        try
-        {
-            // create the xml code in a string
-            String xml = new String(
-            "<imageclip> <opacity> <foo/> </opacity> </imageclip>");
-
-            // turn the string into a char[] and build the Document from it
-            doc = builder.build( new CharArrayReader(xml.toCharArray()) );
-
-            // create a seq from the document
-            ic = new ImageClip(doc);
-
-            // if we get here, that's bad
-            assertNotNull("opacity with non-seq child succeeded", null);
-        }
-        catch(IllegalArgumentException e)
-        {}
-        catch(Exception e)
-        {
-            assertTrue("got exception: " + e, false);
-        }
-    }
-
-
-    /**
-     * Check the Document constructor success path for opacity works
-     */
-    public void testGoodOpacityConstructor()
-    {
-        ImageClip ic = null;
-        SAXBuilder builder = new SAXBuilder();
-        Document doc = null;
-
-        // should work if <opacity> has an attribute
-        try
-        {
-            // create the xml code in a string
-            String xml = new String(
-            "<imageclip> <opacity> <seq start='1' stop='2'/> </opacity> </imageclip>");
-
-            // turn the string into a char[] and build the Document from it
-            doc = builder.build( new CharArrayReader(xml.toCharArray()) );
-
-            // create a seq from the document
-            ic = new ImageClip(doc);
-
-            // if we get here, that's bad
-            assertNotNull("simple opacity create failed", ic);
-
-            // get the sourceSeq
-            Seq ss = ic.getOpacity();
-            assertEquals("wrong start in opacity", 1, ss.getStart());
-            assertEquals("wrong stop in opacity", 2, ss.getStop());
-        }
         catch(Exception e)
         {
             assertTrue("got exception: " + e, false);
@@ -1619,90 +993,38 @@ public class TestImageClip extends TestCase
 
 
     /**
-     * Check the getImage() calls work, using all defaults
-     */
-    public void testGetImageDefault()
-    {
-        ImageClip ic = null;
-        SAXBuilder builder = new SAXBuilder();
-        Document doc = null;
-        Element image = null;
-
-        // should work
-        try
-        {
-            // create the xml code in a string: this clip is 6 images long
-            // (from frame 5 to frame 10) and the target starts at 10,
-            // so we should be inframe from frame 10 to 15
-            String xml = new String(
-            "<imageclip> <sourcefiles dir='resources/images'> <include name='**'/> </sourcefiles> <sourceseq> <seq start='0' stop='30'/> </sourceseq> <targetseq start='0'/> </imageclip>");
-
-            // turn the string into a char[] and build the Document from it
-            doc = builder.build( new CharArrayReader(xml.toCharArray()) );
-
-            // create a seq from the document
-            ic = new ImageClip(doc);
-
-            // if we get here, that's bad
-            assertNotNull("simple sourcefiles create failed", ic);
-
-            // get the first image element
-            image = ic.getImage(0);
-            assertNotNull("got null image", image);
-
-            // make sure there's no children below the node
-            assertEquals("children in image", 0, image.getContentSize());
-
-            // make sure the tag is <image>
-            assertEquals("wrong tag name", "image", image.getName());
-
-            // make sure the attributes are correct
-            assertEquals("wrong file name", "resources/images/dot-000000.png",
-                image.getAttributeValue("file") );
-            assertEquals("wrong xposition", "0",
-                image.getAttributeValue("xposition") );
-            assertEquals("wrong yposition", "0",
-                image.getAttributeValue("yposition") );
-            assertEquals("wrong rotation",
-                String.valueOf(ImageClip.ROTATION_DEFAULT),
-                image.getAttributeValue("rotation") );
-            assertEquals("wrong opacity",   
-                String.valueOf(ImageClip.OPACITY_DEFAULT),
-                image.getAttributeValue("opacity") );
-
-            // there are no default xSize or ySize, so they shouldn't
-            // be set
-            assertEquals("has an xSize", null,
-                image.getAttributeValue("xsize") );
-            assertEquals("has an ySize", null,
-                image.getAttributeValue("ysize") );
-        }
-        catch(Exception e)
-        {
-            e.printStackTrace();
-            assertTrue("got exception: " + e, false);
-        }
-    }
-
-
-    /**
      * Check the getImage() calls work, using no defaults
      */
-    public void testGetImageNoDefault()
+    public void testGetImage()
     {
         ImageClip ic = null;
         SAXBuilder builder = new SAXBuilder();
         Document doc = null;
         Element image = null;
 
-        // should work
+        // pre-parameter getimage test: should work
         try
         {
             // create the xml code in a string: this clip is 6 images long
             // (from frame 5 to frame 10) and the target starts at 10,
             // so we should be inframe from frame 10 to 15
             String xml = new String(
-            "<imageclip> <sourcefiles dir='resources/images'> <include name='**'/> </sourcefiles> <sourceseq> <seq start='5' stop='10'/> </sourceseq> <xposition> <seq start='100' stop='200'/> </xposition> <yposition> <seq start='50' stop='10' step='-1'/> </yposition> <rotation> <seq start='15' stop='25'/> </rotation> <opacity> <seq start='10' stop='100'/> </opacity> <xsize> <seq start='3' stop='6'/> </xsize> <ysize> <seq start='120' stop='180'/> </ysize> <targetseq start='5'/> </imageclip>");
+ "<imageclip>"
+
++"  <sourcefiles dir='resources/images'><include name='*'/></sourcefiles>"
++"  <sourceseq> <seq start='5' stop='10'/> </sourceseq>"
++"  <targetseq start='5'/>"
+
++"  <parameter name='xposition'> <seq start='100' stop='200'/> </parameter>"
++"  <parameter name='yposition'>"
++"    <seq start='50' stop='10' step='-1'/>"
++"  </parameter>"
++"  <parameter name='rotation'> <seq start='15' stop='25'/> </parameter>"
++"  <parameter name='opacity'> <seq start='10' stop='100'/> </parameter>"
++"  <parameter name='xsize'> <seq start='3' stop='6'/> </parameter>"
++"  <parameter name='ysize'> <seq start='120' stop='180'/> </parameter>"
+
++"</imageclip>");
 
             // turn the string into a char[] and build the Document from it
             doc = builder.build( new CharArrayReader(xml.toCharArray()) );

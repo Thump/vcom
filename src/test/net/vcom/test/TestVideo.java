@@ -1,13 +1,11 @@
 
-/*****************************************************************************
+/**************************************************************************
  *
  * VCom: video compositor test
  *
  * source file: TestVideo.java  
  * package: net.vcom
  *
- * version 0.3
- * 2005-06-01
  * Copyright (c) 2005, Denis McLaughlin
  * Released under the GPL license, version 2
  *  
@@ -593,7 +591,7 @@ public class TestVideo extends TestCase
         {
             // create the xml code in a string
             String xml = new String(
-            "<video name='foo'> <imageclip> <opacity> <seq start='1' stop='2'/> </opacity> </imageclip> </video> ");
+            "<video name='foo'> <imageclip> <parameter name='opacity'> <seq start='1' stop='2'/> </parameter> </imageclip> </video> ");
 
             // turn the string into a char[] and build the Document from it
             doc = builder.build( new CharArrayReader(xml.toCharArray()) );
@@ -609,7 +607,7 @@ public class TestVideo extends TestCase
             assertEquals("wrong number of imageclips", 1, iclips.size() ); 
             ImageClip ic = (ImageClip) iclips.get(0);
             assertNotNull("null imageclip", ic ); 
-            Seq opacity = ic.getOpacity();
+            Seq opacity = ic.getParameter("opacity").getSeq();
             assertNotNull("null opacity", opacity ); 
             assertEquals("wrong opacity start", 1, opacity.getStart() );
             assertEquals("wrong opacity stop", 2, opacity.getStop() );
@@ -637,7 +635,7 @@ public class TestVideo extends TestCase
         {
             // create the xml code in a string
             String xml = new String(
-            "<video name='foo'> <imageclip> <sourcefiles dir='resources/test'> <include name='**'/> <exclude name='baz'/> <exclude name='quux'/> </sourcefiles> </imageclip> </video>");
+            " <video name='foo'> <imageclip> <sourcefiles dir='resources/test'> <include name='**'/> <exclude name='baz'/> <exclude name='quux'/> </sourcefiles> <sourceseq> <seq start='5' stop='10'/> </sourceseq> </imageclip> </video>");
 
             // turn the string into a char[] and build the Document from it
             doc = builder.build( new CharArrayReader(xml.toCharArray()) );
@@ -704,7 +702,7 @@ public class TestVideo extends TestCase
         try
         {
             // create the xml code in a string
-            String xml = new String( "<video name='name1' xsize='320' ysize='240' bgcolor='white' fps='30' encoder='xvid' encoderopts='opt1' workroot='build/work' finalroot='build/final' > <!-- white background --> <imageclip> <sourcefiles dir='resources/images/'> <include name='white-*.png'/> </sourcefiles> <sourceseq> <seq start='0' stop='29'/> </sourceseq> <targetseq start='0'/> </imageclip> <!-- black dot --> <imageclip> <sourcefiles dir='resources/images'> <include name='dot-*.png'/> </sourcefiles> <sourceseq> <seq start='0' stop='29'/> </sourceseq> <targetseq start='0'/> <xposition> <seq start='0' stop='150' step='5'/> </xposition> <yposition> <seq start='0' stop='150' step='5'/> </yposition> </imageclip> <soundclip> <source file='foo.wav' start='0.0' stop='1.0' /> <target start='0.0'/> </soundclip> </video>");
+            String xml = new String( " <video name='name1' xsize='320' ysize='240' bgcolor='white' fps='30' encoder='xvid' encoderopts='opt1' workroot='build/work' finalroot='build/final' > <!-- white background --> <imageclip> <sourcefiles dir='resources/images/'> <include name='white-*.png'/> </sourcefiles> <sourceseq> <seq start='0' stop='29'/> </sourceseq> <targetseq start='0'/> </imageclip> <!-- black dot --> <imageclip> <sourcefiles dir='resources/images'> <include name='dot-*.png'/> </sourcefiles> <sourceseq> <seq start='0' stop='29'/> </sourceseq> <targetseq start='0'/> <parameter name='xposition'> <seq start='0' stop='150' step='5'/> </parameter> <parameter name='yposition'> <seq start='0' stop='150' step='5'/> </parameter> </imageclip> <soundclip> <source file='foo.wav' start='0.0' stop='1.0' /> <target start='0.0'/> </soundclip> </video>");
 
             // turn the string into a char[] and build the Document from it
             doc = builder.build( new CharArrayReader(xml.toCharArray()) );
@@ -772,7 +770,7 @@ public class TestVideo extends TestCase
         try
         {
             // create the xml code in a string
-            String xml = new String( "<video name='name1' xsize='320' ysize='240' bgcolor='white' fps='30' encoder='xvid' encoderopts='opt1' workroot='build/test/work' finalroot='build/test/final' > <imageclip> <sourcefiles dir='resources/images/'> <include name='white-*.png'/> </sourcefiles> <sourceseq> <seq start='0' stop='9'/> </sourceseq> <targetseq start='0'/> </imageclip> <imageclip> <sourcefiles dir='resources/images'> <include name='dot-*.png'/> </sourcefiles> <sourceseq> <seq start='0' stop='9'/> </sourceseq> <targetseq start='0'/> <xposition> <seq start='0' stop='10' step='1'/> </xposition> </imageclip> </video>" );
+            String xml = new String( "<video name='name1' xsize='320' ysize='240' bgcolor='white' fps='30' encoder='xvid' encoderopts='opt1' workroot='build/test/work' finalroot='build/test/final' > <imageclip> <sourcefiles dir='resources/images/'> <include name='white-*.png'/> </sourcefiles> <sourceseq> <seq start='0' stop='9'/> </sourceseq> <targetseq start='0'/> </imageclip> <imageclip> <sourcefiles dir='resources/images'> <include name='dot-*.png'/> </sourcefiles> <sourceseq> <seq start='0' stop='9'/> </sourceseq> <targetseq start='0'/> <parameter name='xposition'> <seq start='0' stop='10' step='1'/> </parameter> </imageclip> </video>" );
 
             // turn the string into a char[] and build the Document from it
             doc = builder.build( new CharArrayReader(xml.toCharArray()) );
@@ -890,7 +888,7 @@ public class TestVideo extends TestCase
         try
         {
             // create the xml code in a string
-            String xml1 = new String( "<video name='name1' xsize='320' ysize='240' bgcolor='white' fps='30' encoder='xvid' encoderopts='opt1' workroot='build/test/work' finalroot='build/test/final' > <imageclip> <sourcefiles dir='resources/images/'> <include name='white-*.png'/> </sourcefiles> <sourceseq> <seq start='0' stop='9'/> </sourceseq> <targetseq start='0'/> </imageclip> <imageclip> <sourcefiles dir='resources/images'> <include name='dot-*.png'/> </sourcefiles> <sourceseq> <seq start='0' stop='9'/> </sourceseq> <targetseq start='0'/> <xposition> <seq start='0' stop='5' step='1'/> </xposition> </imageclip> </video>" );
+            String xml1 = new String( "<video name='name1' xsize='320' ysize='240' bgcolor='white' fps='30' encoder='xvid' encoderopts='opt1' workroot='build/test/work' finalroot='build/test/final' > <imageclip> <sourcefiles dir='resources/images/'> <include name='white-*.png'/> </sourcefiles> <sourceseq> <seq start='0' stop='9'/> </sourceseq> <targetseq start='0'/> </imageclip> <imageclip> <sourcefiles dir='resources/images'> <include name='dot-*.png'/> </sourcefiles> <sourceseq> <seq start='0' stop='9'/> </sourceseq> <targetseq start='0'/> <parameter name='xposition'> <seq start='0' stop='5' step='1'/> </parameter> </imageclip> </video>" );
 
             // turn the string into a char[] and build the Document from it
             doc1 = builder.build( new CharArrayReader(xml1.toCharArray()) );
@@ -953,7 +951,7 @@ public class TestVideo extends TestCase
             // first five frames.
 
             // create the xml code in a string
-            String xml2 = new String( "<video name='name1' xsize='320' ysize='240' bgcolor='white' fps='30' encoder='xvid' encoderopts='opt1' workroot='build/test/work' finalroot='build/test/final' > <imageclip> <sourcefiles dir='resources/images/'> <include name='white-*.png'/> </sourcefiles> <sourceseq> <seq start='0' stop='9'/> </sourceseq> <targetseq start='0'/> </imageclip> <imageclip> <sourcefiles dir='resources/images'> <include name='dot-*.png'/> </sourcefiles> <sourceseq> <seq start='0' stop='9'/> </sourceseq> <targetseq start='0'/> <xposition> <seq start='2' stop='5' step='1'/> </xposition> </imageclip> </video>" );
+            String xml2 = new String( "<video name='name1' xsize='320' ysize='240' bgcolor='white' fps='30' encoder='xvid' encoderopts='opt1' workroot='build/test/work' finalroot='build/test/final' > <imageclip> <sourcefiles dir='resources/images/'> <include name='white-*.png'/> </sourcefiles> <sourceseq> <seq start='0' stop='9'/> </sourceseq> <targetseq start='0'/> </imageclip> <imageclip> <sourcefiles dir='resources/images'> <include name='dot-*.png'/> </sourcefiles> <sourceseq> <seq start='0' stop='9'/> </sourceseq> <targetseq start='0'/> <parameter name='xposition'> <seq start='2' stop='5' step='1'/> </parameter> </imageclip> </video>" );
 
             // turn the string into a char[] and build the Document from it
             doc2 = builder.build( new CharArrayReader(xml2.toCharArray()) );
@@ -1064,7 +1062,7 @@ public class TestVideo extends TestCase
         try
         {
             // create the xml code in a string
-            String xml1 = new String( "<video name='name1' xsize='320' ysize='240' bgcolor='white' fps='30' encoder='xvid' encoderopts='opt1' workroot='build/test/work' finalroot='build/test/final' > <imageclip> <sourcefiles dir='resources/images/'> <include name='white-*.png'/> </sourcefiles> <sourceseq> <seq start='0' stop='9'/> </sourceseq> <targetseq start='0'/> </imageclip> <imageclip> <sourcefiles dir='resources/images'> <include name='dot-*.png'/> </sourcefiles> <sourceseq> <seq start='0' stop='9'/> </sourceseq> <targetseq start='0'/> <xposition> <seq start='0' stop='5' step='1'/> </xposition> </imageclip> </video>" );
+            String xml1 = new String( "<video name='name1' xsize='320' ysize='240' bgcolor='white' fps='30' encoder='xvid' encoderopts='opt1' workroot='build/test/work' finalroot='build/test/final' > <imageclip> <sourcefiles dir='resources/images/'> <include name='white-*.png'/> </sourcefiles> <sourceseq> <seq start='0' stop='9'/> </sourceseq> <targetseq start='0'/> </imageclip> <imageclip> <sourcefiles dir='resources/images'> <include name='dot-*.png'/> </sourcefiles> <sourceseq> <seq start='0' stop='9'/> </sourceseq> <targetseq start='0'/> <parameter name='xposition'> <seq start='0' stop='5' step='1'/> </parameter> </imageclip> </video>" );
 
             // turn the string into a char[] and build the Document from it
             doc1 = builder.build( new CharArrayReader(xml1.toCharArray()) );
@@ -1125,7 +1123,7 @@ public class TestVideo extends TestCase
             // all images to preserve their old dates.
 
             // create the xml code in a string
-            String xml2 = new String( "<video name='name1' xsize='320' ysize='240' bgcolor='white' fps='30' encoder='xvid' encoderopts='opt1' workroot='build/test/work' finalroot='build/test/final' > <imageclip> <sourcefiles dir='resources/images/'> <include name='white-*.png'/> </sourcefiles> <sourceseq> <seq start='0' stop='9'/> </sourceseq> <targetseq start='0'/> </imageclip> <imageclip> <sourcefiles dir='resources/images'> <include name='dot-*.png'/> </sourcefiles> <sourceseq> <seq start='0' stop='9'/> </sourceseq> <targetseq start='0'/> <xposition> <seq start='0' stop='5' step='1'/> </xposition> </imageclip> </video>" );
+            String xml2 = new String( "<video name='name1' xsize='320' ysize='240' bgcolor='white' fps='30' encoder='xvid' encoderopts='opt1' workroot='build/test/work' finalroot='build/test/final' > <imageclip> <sourcefiles dir='resources/images/'> <include name='white-*.png'/> </sourcefiles> <sourceseq> <seq start='0' stop='9'/> </sourceseq> <targetseq start='0'/> </imageclip> <imageclip> <sourcefiles dir='resources/images'> <include name='dot-*.png'/> </sourcefiles> <sourceseq> <seq start='0' stop='9'/> </sourceseq> <targetseq start='0'/> <parameter name='xposition'> <seq start='0' stop='5' step='1'/> </parameter> </imageclip> </video>" );
 
             // turn the string into a char[] and build the Document from it
             doc2 = builder.build( new CharArrayReader(xml2.toCharArray()) );
@@ -1220,7 +1218,7 @@ public class TestVideo extends TestCase
             // should see all frames re-rendered
 
             // create the xml code in a string
-            String xml3 = new String( "<video name='name1' xsize='320' ysize='240' bgcolor='black' fps='30' encoder='xvid' encoderopts='opt1' workroot='build/test/work' finalroot='build/test/final' > <imageclip> <sourcefiles dir='resources/images/'> <include name='white-*.png'/> </sourcefiles> <sourceseq> <seq start='0' stop='9'/> </sourceseq> <targetseq start='0'/> </imageclip> <imageclip> <sourcefiles dir='resources/images'> <include name='dot-*.png'/> </sourcefiles> <sourceseq> <seq start='0' stop='9'/> </sourceseq> <targetseq start='0'/> <xposition> <seq start='0' stop='5' step='1'/> </xposition> </imageclip> </video>" );
+            String xml3 = new String( "<video name='name1' xsize='320' ysize='240' bgcolor='black' fps='30' encoder='xvid' encoderopts='opt1' workroot='build/test/work' finalroot='build/test/final' > <imageclip> <sourcefiles dir='resources/images/'> <include name='white-*.png'/> </sourcefiles> <sourceseq> <seq start='0' stop='9'/> </sourceseq> <targetseq start='0'/> </imageclip> <imageclip> <sourcefiles dir='resources/images'> <include name='dot-*.png'/> </sourcefiles> <sourceseq> <seq start='0' stop='9'/> </sourceseq> <targetseq start='0'/> <parameter name='xposition'> <seq start='0' stop='5' step='1'/> </parameter> </imageclip> </video>" );
 
             // turn the string into a char[] and build the Document from it
             doc2 = builder.build( new CharArrayReader(xml3.toCharArray()) );

@@ -3,186 +3,247 @@ vcom CHANGES
 
 ---------------------------------------------------------------------------
 
-  November 29, 2006
-  Denis McLaughlin
-   - added a property for the final frame type, vcom.render.frame.type, set
-     to the text string of the image type, for example jpg or png
+September 3, 2007
+Denis McLaughlin
+ - finished adding code printing changes to RenderVideo code
+ - still need to add it to sound render
 
-  November 24, 2006
-  Denis McLaughlin
-   - added frame count to processing
 
-  November 19, 2006
-  Denis McLaughlin
-   - added -f option to ln command
-   - tweaked logic for generating the final-images version
-   - changed type of final images to be png
+September 2, 2007
+Denis McLaughlin
+ - changed naming scheme for render classes: Render<type>_<subtype>,
+   so for example, RenderFrames_imagemagick is the imagemagick renderer
+   for frames
+ - added third role, encoding
+ - merged farm code (printing commands) into native render classes
+ - work/videonames still not being produce correctly :(
 
-  November 16, 2006
-  Denis McLaughlin
-   - added getopt.jar file
-   - added support for -f, -s, and -v
-   - changed existing -f option to -m
-   - implemented new frame render class, LinuxFarmFrameRender
-   - added support to specify the frame render class with the
-     vcom.render.frame.class property: i teh r0x0r!
+September 1, 2007
+Denis McLaughlin
+ - merged VComProcess and VComRender into a single VCom class
+ - that single class can now be called with -p or -r to just process, or
+   just render, by default it does both
+ - also changed it so the processing determines the location of the
+   frames.xml file from the video.xml file
+ - changed LinuxSoundRender to exit early if there are no sounds
+ - tweaked transcode command to not use -k anymore (what did it used
+   to do?  it's a mystery, a mystery...)
+ - tweaked processing output to keep the frame count on the screen after
+   completion
 
-  November 15, 2006
-  Denis McLaughlin
-   - changed render to print commands rather than run them
-   - added a variable for the version in build.xml
-   - added support for rendering frames to a command file
+August 31, 2007
+Denis McLaughlin
+ - tweaked ImageClip.toString() to print string version of Parameters
+ - finished removal of all xposition, yposition, opacity, rotation,
+   xsize, and ysize values: fully using parameters, yay me!
+ - hmm, had to reintroduce defaults into the render classes, not the
+   best way to do it :( 
+
+August 30, 2007
+Denis McLaughlin
+ - fixed up recursive validation check in ImageClip
+ - made sourceseq a mandatory sequence
+
+August 29, 2007
+Denis McLaughlin
+ - tweaked Parameter valid testcase
+ - changed ImageClip to correctly parse and store Parameters
+ - added ImageClip test cases to tests Parameters: set, get, and override
+ - tweaked some of the source formatting for smaller q1 screen
+ - removed version and last modified date from source files
+
+August 27, 2007
+Denis McLaughlin
+ - added TestParameter class
+
+August 26, 2007
+Denis McLaughlin
+ - added Parameter class, preparatory to removing specific seqs from 
+   ImageClip
+
+version 0.6 complete
+version 0.5 complete
+
+November 29, 2006
+Denis McLaughlin
+ - added a property for the final frame type, vcom.render.frame.type, set
+   to the text string of the image type, for example jpg or png
+
+November 24, 2006
+Denis McLaughlin
+ - added frame count to processing
+
+November 19, 2006
+Denis McLaughlin
+ - added -f option to ln command
+ - tweaked logic for generating the final-images version
+ - changed type of final images to be png
+
+November 16, 2006
+Denis McLaughlin
+ - added getopt.jar file
+ - added support for -f, -s, and -v
+ - changed existing -f option to -m
+ - implemented new frame render class, LinuxFarmFrameRender
+ - added support to specify the frame render class with the
+   vcom.render.frame.class property: i teh r0x0r!
+
+November 15, 2006
+Denis McLaughlin
+ - changed render to print commands rather than run them
+ - added a variable for the version in build.xml
+ - added support for rendering frames to a command file
 
 version 0.4 complete
 
-  August 7, 2006
-  Denis McLaughlin
-   - moved valid() from sub-class to Seq
-   - added a typeValid() in Seq sub-class
+August 7, 2006
+Denis McLaughlin
+ - moved valid() from sub-class to Seq
+ - added a typeValid() in Seq sub-class
 
-  August 5, 2006
-  Denis McLaughlin
-   - changed Seq to abstract class
-   - changed Seq class to SeqLoop, extending Seq
-   - fixed ImageClip and TestImageClip to match above changes
-   - moved TestSeq to TestSeqLoop
+August 5, 2006
+Denis McLaughlin
+ - changed Seq to abstract class
+ - changed Seq class to SeqLoop, extending Seq
+ - fixed ImageClip and TestImageClip to match above changes
+ - moved TestSeq to TestSeqLoop
 
-  July 23, 2006
-  Denis McLaughlin
-   - added a max frame for rendering and encoding
-   - changed encoder to encode only rendered frames (still broken cus
-     of batches?) 
+July 23, 2006
+Denis McLaughlin
+ - added a max frame for rendering and encoding
+ - changed encoder to encode only rendered frames (still broken cus
+   of batches?) 
 
-  July 19, 2006
-  Denis McLaughlin
-   - added status output as frames are rendered
+July 19, 2006
+Denis McLaughlin
+ - added status output as frames are rendered
 
 version 0.3 complete
 
-  September 26, 2005
-  Denis McLaughlin
-   - added a length option to image clips, to specify the maximum length
-     of the clip
+September 26, 2005
+Denis McLaughlin
+ - added a length option to image clips, to specify the maximum length
+   of the clip
 
-  August 22, 2005
-  Denis McLaughlin
-   - changed final frame type to jpg, since the alpha channel in
-     the png messes up the transcode xvid encoder
+August 22, 2005
+Denis McLaughlin
+ - changed final frame type to jpg, since the alpha channel in
+   the png messes up the transcode xvid encoder
 
-  July 26, 2005
-  Denis McLaughlin
-   - fixed bug in date stamping of images
-   - refactored frame and video rendering into different classes, covered
-     by different interfaces: allows mix and matching of rendering engines
-   - added property file vcom.properties, read from the current directory
-   - added sound processing: ewf files are created for the sounds
+July 26, 2005
+Denis McLaughlin
+ - fixed bug in date stamping of images
+ - refactored frame and video rendering into different classes, covered
+   by different interfaces: allows mix and matching of rendering engines
+ - added property file vcom.properties, read from the current directory
+ - added sound processing: ewf files are created for the sounds
 
-  July 25, 2005
-  Denis McLaughlin
-   - added re-rendering if video header changes
-   - changed from using tccat to avimerge, since tccat was merging as an
-     mpeg (?)
+July 25, 2005
+Denis McLaughlin
+ - added re-rendering if video header changes
+ - changed from using tccat to avimerge, since tccat was merging as an
+   mpeg (?)
 
-  July 22, 2005
-  Denis McLaughlin
-   - debugged conditional encoding of videos
-   - added stats for video encoding
-   - added test cases for conditional encoding of videos
+July 22, 2005
+Denis McLaughlin
+ - debugged conditional encoding of videos
+ - added stats for video encoding
+ - added test cases for conditional encoding of videos
 
-  July 20, 2005
-  Denis McLaughlin
-   - removed tmpRoot attribute: everything gets stuck in workRoot, except
-     for the final video, which is in finalRoot
-   - added bgcolor attribute to video: this is the default background
-     color
-   - base image of each frame is a composite of the initial image over
-     a image that is the xsize x ysize and bgcolor
+July 20, 2005
+Denis McLaughlin
+ - removed tmpRoot attribute: everything gets stuck in workRoot, except
+   for the final video, which is in finalRoot
+ - added bgcolor attribute to video: this is the default background
+   color
+ - base image of each frame is a composite of the initial image over
+   a image that is the xsize x ysize and bgcolor
 
-  July 19, 2005
-  Denis McLaughlin
-   - added routine to encode video
+July 19, 2005
+Denis McLaughlin
+ - added routine to encode video
 
-  July 17, 2005
-  Denis McLaughlin
-   - finished forward propagating dates in cases where the image xml
-     hasn't changed and when it has
-   - added tests for the image date propagation
+July 17, 2005
+Denis McLaughlin
+ - finished forward propagating dates in cases where the image xml
+   hasn't changed and when it has
+ - added tests for the image date propagation
 
-  July 15, 2005
-  Denis McLaughlin
-   - added Util class to hold some common utility classes
-   - added TestUtil class to hold some common utility classes
-   - began implementation to propagate image dates from old frames file
+July 15, 2005
+Denis McLaughlin
+ - added Util class to hold some common utility classes
+ - added TestUtil class to hold some common utility classes
+ - began implementation to propagate image dates from old frames file
 
-  July 13, 2005
-  Denis McLaughlin
-   - separated render code into its own class, and implemented a VComRenderI
-     interface: this means other render classes (for Windows or whatever)
-     could be written
-   - initial implementation of VComLinuxRender test class
+July 13, 2005
+Denis McLaughlin
+ - separated render code into its own class, and implemented a VComRenderI
+   interface: this means other render classes (for Windows or whatever)
+   could be written
+ - initial implementation of VComLinuxRender test class
 
-  July 12, 2005
-  Denis McLaughlin
-   - got rendering code working
-   - added code to conditionally render based on file age: still need
-     to add code to propagate image dates from one frames file to the next
+July 12, 2005
+Denis McLaughlin
+ - got rendering code working
+ - added code to conditionally render based on file age: still need
+   to add code to propagate image dates from one frames file to the next
 
-  July 11, 2005
-  Denis McLaughlin
-   - added frame processing to ImageClip
-   - added frames processing to Video
-   - ready to start on rendering script
-   - made first pass at rendering script
+July 11, 2005
+Denis McLaughlin
+ - added frame processing to ImageClip
+ - added frames processing to Video
+ - ready to start on rendering script
+ - made first pass at rendering script
 
-  July 5, 2005
-  Denis McLaughlin
-   - added Document constructor for SoundClip, Video
-   - added tests for SoundClip, Video Document constructor
-   - added script interface to vcom
-   - added build/vcom-0.3 package directory, from which vcom can be run
+July 5, 2005
+Denis McLaughlin
+ - added Document constructor for SoundClip, Video
+ - added tests for SoundClip, Video Document constructor
+ - added script interface to vcom
+ - added build/vcom-0.3 package directory, from which vcom can be run
 
-  July 4, 2005
-  Denis McLaughlin
-   - added Document constructor for ImageClip
-   - added tests for ImageClip Document constructor
+July 4, 2005
+Denis McLaughlin
+ - added Document constructor for ImageClip
+ - added tests for ImageClip Document constructor
 
-  July 3, 2005
-  Denis McLaughlin
-   - added Seq Document constructor
-   - added tests for Seq Document constructor
+July 3, 2005
+Denis McLaughlin
+ - added Seq Document constructor
+ - added tests for Seq Document constructor
 
-  July 2, 2005
-  Denis McLaughlin
-   - finished Seq class
-   - finished TestSeq class
+July 2, 2005
+Denis McLaughlin
+ - finished Seq class
+ - finished TestSeq class
 
-  June 22, 2005
-  Denis McLaughlin
-   - added TestVideo, TestImageClip, TestSoundClip, TestSeq
-   - added getters and setters for ImageClip, SoundClip, Seq
-   - added Xlint option to compiler
+June 22, 2005
+Denis McLaughlin
+ - added TestVideo, TestImageClip, TestSoundClip, TestSeq
+ - added getters and setters for ImageClip, SoundClip, Seq
+ - added Xlint option to compiler
 
-  June 15, 2005
-  Denis McLaughlin
-   - added getters and setters for VSeq
-   - added javadoc goal
-   - started adding junit goal
+June 15, 2005
+Denis McLaughlin
+ - added getters and setters for VSeq
+ - added javadoc goal
+ - started adding junit goal
 
-  June 13, 2005
-  Denis McLaughlin
-   - removed crop and videosource tags
-   - added classes for VSeq, ImageSeq, and Seq
+June 13, 2005
+Denis McLaughlin
+ - removed crop and videosource tags
+ - added classes for VSeq, ImageSeq, and Seq
 
-  June 9, 2005
-  Denis McLaughlin
-   - continued working on vcom dtd
-   - added the CHANGES file
+June 9, 2005
+Denis McLaughlin
+ - continued working on vcom dtd
+ - added the CHANGES file
 
-  (various)
-  Denis McLaughlin
-   - initial development of java implementation
-   - ant build infrastructure
-   - basic mainline
-   - jdom xml parsing
-   - jelly pre-parser
-   - initial vcom dtd
+(various)
+Denis McLaughlin
+ - initial development of java implementation
+ - ant build infrastructure
+ - basic mainline
+ - jdom xml parsing
+ - jelly pre-parser
+ - initial vcom dtd

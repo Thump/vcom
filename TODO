@@ -2,7 +2,7 @@
 
  x status list of frames as generated
 
- - vcomrender called with same xml as vcomprocess: figures out frame.xml
+ x vcomrender called with same xml as vcomprocess: figures out frame.xml
    file from original xml
 
  - move all option processing to the java script from the shell script
@@ -14,15 +14,15 @@
  - ability to refer to len, start, and stop of a frame sequence by name,
    rather than munging around with variables: have to watch for recursion
 
- - remove attribute specific tags: make them generic, with
+ x remove attribute specific tags: make them generic, with
    a name which the renderer maps to a switch, and different types of
    sequences, floating, integer, pair, matrix
    <seq type="float" name="rotation" start, stop, loopstart, loopstop,
     step, loopcount, length>
 
  - add support for interpolated seqs: provide data points, define
-   interpolating algorithm (linear, linear-easeI, linear-easeO, linear-easeIO,
-   spline), like:
+   interpolating algorithm (linear, linear-easeI, linear-easeO,
+   linear-easeIO, spline), like:
 
    <attribute
        name="rotate"
@@ -49,3 +49,8 @@
    FileSet class?
 
  - add support for directly reading frames and sound from video files
+
+ - hmm, a string based sequence, that is intialized with a series of
+   strings, and just iterates around them
+
+ - proper error reporting, showing line and column of errors

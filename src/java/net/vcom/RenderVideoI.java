@@ -1,13 +1,11 @@
 
-/*****************************************************************************
+/**************************************************************************
  *
  * VComFrames: video compositor
  *
- * source file: FrameRenderI.java
+ * source file: RenderVideoI.java
  * package: net.vcom
  *
- * version 0.3
- * 2005-06-01
  * Copyright (c) 2005, Denis McLaughlin
  * Released under the GPL license, version 2
  *
@@ -21,12 +19,12 @@ import org.jdom.Element;
  * This program takes a per-frame xml file and generates the corresponding
  * video.
  */
-public interface FrameRenderI
+public interface RenderVideoI
 {
     /**
-     * This processes a frames document and creates the images
+     * This processes the images and creates the video
      */
-    public void renderFrames(Element root);
+    public void renderVideo(Element root);
 
     /**
      * This prints some stats

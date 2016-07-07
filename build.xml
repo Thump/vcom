@@ -5,7 +5,7 @@
 
 
     <!-- set a variable for the version -->
-    <property name="version" value="0.6"/>
+    <property name="version" value="0.7"/>
    
     <!-- Compiles the source code -->
     <target name="init" >

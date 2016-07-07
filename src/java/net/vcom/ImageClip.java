@@ -1,13 +1,11 @@
 
-/*****************************************************************************
+/**************************************************************************
  *
  * VCom: video compositor
  *
  * source file: imageclip.java
  * package: net.vcom
  *
- * version 0.3
- * 2005-06-01
  * Copyright (c) 2005, Denis McLaughlin
  * Released under the GPL license, version 2
  *
@@ -17,7 +15,10 @@ package net.vcom;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Set;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -38,19 +39,15 @@ import org.jdom.output.Format;
 public class ImageClip
 {
     /**
-     * These are the default values
-     */
-    public static int TARGETSTART_DEFAULT = 0;
-    public static int XPOSITION_DEFAULT = 0;
-    public static int YPOSITION_DEFAULT = 0;
-    public static int ROTATION_DEFAULT = 0;
-    public static int OPACITY_DEFAULT = 100;
-
-
-    /**
      * This is the list of files that act as the source of this sequence
      */
     private DirectoryScanner sourceFiles = null;
+
+    /**
+     * This is the set of parameters which define this image clip,
+     * keyed by parameter name.
+     */
+    Map parameters = new HashMap();
 
     /**
      * This is source sequence: the order in which frames are to be
@@ -61,17 +58,7 @@ public class ImageClip
     /**
      * This is the frame at which the image insertion should begin
      */
-    private int targetStart = TARGETSTART_DEFAULT;
-
-    /**
-     * These are the various image parameters
-     */
-    private Seq xPosition = null;
-    private Seq yPosition = null;
-    private Seq rotation = null;
-    private Seq opacity = null;
-    private Seq xSize = null;
-    private Seq ySize = null;
+    private int targetStart = 0;
 
 
     /**
@@ -134,13 +121,6 @@ public class ImageClip
                 continue;
             }
 
-            // targetSeq
-            if ( child.getName().equals("targetseq") )
-            {
-                setTargetStart(child);
-                continue;
-            }
-
             // sourceseq
             if ( child.getName().equals("sourceseq") )
             {
@@ -148,51 +128,23 @@ public class ImageClip
                 continue;
             }
 
-            // xposition
-            if ( child.getName().equals("xposition") )
+            // targetSeq
+            if ( child.getName().equals("targetseq") )
             {
-                setXPosition(child);
+                setTargetStart(child);
                 continue;
             }
 
-            // yposition
-            if ( child.getName().equals("yposition") )
+            // parameter
+            if ( child.getName().equals("parameter") )
             {
-                setYPosition(child);
-                continue;
-            }
-
-            // rotation
-            if ( child.getName().equals("rotation") )
-            {
-                setRotation(child);
-                continue;
-            }
-
-            // opacity
-            if ( child.getName().equals("opacity") )
-            {
-                setOpacity(child);
-                continue;
-            }
-
-            // xsize
-            if ( child.getName().equals("xsize") )
-            {
-                setXSize(child);
-                continue;
-            }
-
-            // ysize
-            if ( child.getName().equals("ysize") )
-            {
-                setYSize(child);
+                setParameter(child);
                 continue;
             }
 
             // if we get here, then we don't recognize the child
             throw new IllegalArgumentException(
-                "unrecognized child node in imageclip: " + child.getName() );
+                "unrecognized child node in imageclip: " + child.getName());
         }
     }
 
@@ -449,308 +401,39 @@ public class ImageClip
 
 
     /**
-     * This is getter for the xPosition
+     * This is the getter for a parameter 
      */
-    public Seq getXPosition()
+    public Parameter getParameter(String name)
     {
-        return xPosition;
+        return (Parameter)parameters.get(name);
     }
 
     /**
-     * This is setter for the xPosition
+     * This is the setter for a parameter
      */
-    public void setXPosition(Seq s)
+    public void setParameter(String name, Parameter p)
     {
-        xPosition = s;
+        parameters.put(name,p);
     }
 
     /**
-     * This sets the value of xPosition based on an xml fragment such
+     * This sets a parameter based on an xml fragment such
      * as:
      *
-     *  <xposition>
+     *  <parameter name="foo">
      *    <seq start="1" stop="5"/>
-     *  </xposition>
+     *  </parameter>
      *
      */
-    public void setXPosition(Element e)
+    public void setParameter(Element e)
     {
-        // fail if there are any attributes
-        List atts = e.getAttributes();
-        if ( atts.size() != 0 )
-        {
-            throw new IllegalArgumentException(
-                "<xposition> cannot have any attributes");
-        }
+        // turn the element into a document, and create a parameter from it
+        Document d = new Document((Element) e.clone());
+        Parameter p = new Parameter(d);
 
-        // fail if there isn't exactly one child
-        List children = e.getChildren();
-        if ( children.size() != 1 )
-        {
-            throw new IllegalArgumentException(
-                "<xposition> must have one <seq> child");
-        }
-
-        // get the element, turn it into a document, create seq for it
-        Element seq = (Element) children.get(0);
-        Document d = new Document((Element) seq.clone());
-        //setXPosition(new Seq(d));
-        setXPosition(Seq.createSeq(d));
-    }
-
-
-    /**
-     * This is getter for the yPosition
-     */
-    public Seq getYPosition()
-    {
-        return yPosition;
-    }
-
-    /**
-     * This is setter for the yPosition
-     */
-    public void setYPosition(Seq s)
-    {
-        yPosition = s;
-    }
-
-    /**
-     * This sets the value of yPosition based on an xml fragment such
-     * as:
-     *
-     *  <yposition>
-     *    <seq start="1" stop="5"/>
-     *  </yposition>
-     *
-     */
-    public void setYPosition(Element e)
-    {
-        // fail if there are any attributes
-        List atts = e.getAttributes();
-        if ( atts.size() != 0 )
-        {
-            throw new IllegalArgumentException(
-                "<yposition> cannot have any attributes");
-        }
-
-        // fail if there isn't exactly one child
-        List children = e.getChildren();
-        if ( children.size() != 1 )
-        {
-            throw new IllegalArgumentException(
-                "<yposition> must have one <seq> child");
-        }
-
-        // get the element, turn it into a document, create seq for it
-        Element seq = (Element) children.get(0);
-        Document d = new Document((Element) seq.clone());
-        //setYPosition(new Seq(d));
-        setYPosition(Seq.createSeq(d));
-    }
-
-
-    /**
-     * This is getter for the xSize
-     */
-    public Seq getXSize()
-    {
-        return xSize;
-    }
-
-    /**
-     * This is setter for the xSize
-     */
-    public void setXSize(Seq s)
-    {
-        xSize = s;
-    }
-
-    /**
-     * This sets the value of xSize based on an xml fragment such
-     * as:
-     *
-     *  <xsize>
-     *    <seq start="1" stop="5"/>
-     *  </xsize>
-     *
-     */
-    public void setXSize(Element e)
-    {
-        // fail if there are any attributes
-        List atts = e.getAttributes();
-        if ( atts.size() != 0 )
-        {
-            throw new IllegalArgumentException(
-                "<xsize> cannot have any attributes");
-        }
-
-        // fail if there isn't exactly one child
-        List children = e.getChildren();
-        if ( children.size() != 1 )
-        {
-            throw new IllegalArgumentException(
-                "<xsize> must have one <seq> child");
-        }
-
-        // get the element, turn it into a document, create seq for it
-        Element seq = (Element) children.get(0);
-        Document d = new Document((Element) seq.clone());
-        //setXSize(new Seq(d));
-        setXSize(Seq.createSeq(d));
-    }
-
-
-    /**
-     * This is getter for the ySize
-     */
-    public Seq getYSize()
-    {
-        return ySize;
-    }
-
-    /**
-     * This is setter for the ySize
-     */
-    public void setYSize(Seq s)
-    {
-        ySize = s;
-    }
-
-    /**
-     * This sets the value of ySize based on an xml fragment such
-     * as:
-     *
-     *  <ysize>
-     *    <seq start="1" stop="5"/>
-     *  </ysize>
-     *
-     */
-    public void setYSize(Element e)
-    {
-        // fail if there are any attributes
-        List atts = e.getAttributes();
-        if ( atts.size() != 0 )
-        {
-            throw new IllegalArgumentException(
-                "<ysize> cannot have any attributes");
-        }
-
-        // fail if there isn't exactly one child
-        List children = e.getChildren();
-        if ( children.size() != 1 )
-        {
-            throw new IllegalArgumentException(
-                "<ysize> must have one <seq> child");
-        }
-
-        // get the element, turn it into a document, create seq for it
-        Element seq = (Element) children.get(0);
-        Document d = new Document((Element) seq.clone());
-        //setYSize(new Seq(d));
-        setYSize(Seq.createSeq(d));
-    }
-
-
-    /**
-     * This is getter for the opacity
-     */
-    public Seq getOpacity()
-    {
-        return opacity;
-    }
-
-    /**
-     * This is setter for the opacity
-     */
-    public void setOpacity(Seq s)
-    {
-        opacity = s;
-    }
-
-    /**
-     * This sets the value of opacity based on an xml fragment such
-     * as:
-     *
-     *  <opacity>
-     *    <seq start="1" stop="5"/>
-     *  </opacity>
-     *
-     */
-    public void setOpacity(Element e)
-    {
-        // fail if there are any attributes
-        List atts = e.getAttributes();
-        if ( atts.size() != 0 )
-        {
-            throw new IllegalArgumentException(
-                "<opacity> cannot have any attributes");
-        }
-
-        // fail if there isn't exactly one child
-        List children = e.getChildren();
-        if ( children.size() != 1 )
-        {
-            throw new IllegalArgumentException(
-                "<opacity> must have one <seq> child");
-        }
-
-        // get the element, turn it into a document, create seq for it
-        Element seq = (Element) children.get(0);
-        Document d = new Document((Element) seq.clone());
-        //setOpacity(new Seq(d));
-        setOpacity(Seq.createSeq(d));
-    }
-
-
-    /**
-     * This is getter for the rotation
-     */
-    public Seq getRotation()
-    {
-        return rotation;
-    }
-
-    /**
-     * This is setter for the rotation
-     */
-    public void setRotation(Seq s)
-    {
-        rotation = s;
-    }
-
-    /**
-     * This sets the value of rotation based on an xml fragment such
-     * as:
-     *
-     *  <rotation>
-     *    <seq start="1" stop="5"/>
-     *  </rotation>
-     *
-     */
-    public void setRotation(Element e)
-    {
-        // fail if there are any attributes
-        List atts = e.getAttributes();
-        if ( atts.size() != 0 )
-        {
-            throw new IllegalArgumentException(
-                "<rotation> cannot have any attributes");
-        }
-
-        // fail if there isn't exactly one child
-        List children = e.getChildren();
-        if ( children.size() != 1 )
-        {
-            throw new IllegalArgumentException(
-                "<rotation> must have one <seq> child");
-        }
-
-        // get the element, turn it into a document, create seq for it
-        Element seq = (Element) children.get(0);
-        Document d = new Document((Element) seq.clone());
-        //setRotation(new Seq(d));
-        setRotation(Seq.createSeq(d));
+        // get the name of the parameter, and push it onto the parameters
+        // map keyed on that name
+        setParameter(p.getName(),p);
     }
 
 
@@ -782,27 +465,24 @@ public class ImageClip
             sourceFiles.scan();
         }
 
-        // now we call valid on each subcomponent
-        if ( sourceSeq != null )
+        // check that the sourceSeq is not null
+        if ( sourceSeq == null )
+        {
+            throw new IllegalArgumentException("sourceSeq must be set");
+        }
+        else
         { sourceSeq.valid(); }
 
-        if ( xPosition != null )
-        { xPosition.valid(); }
-
-        if ( yPosition != null )
-        { yPosition.valid(); }
-
-        if ( rotation != null )
-        { rotation.valid(); }
-
-        if ( opacity != null )
-        { opacity.valid(); }
-
-        if ( xSize != null )
-        { xSize.valid(); }
-
-        if ( ySize != null )
-        { ySize.valid(); }
+        // and step through the list of parameters, making sure they're
+        // all valid too
+        Set names = parameters.keySet();
+        Iterator i = names.iterator();
+        Parameter p = null;
+        while ( i.hasNext() )
+        {
+            p = (Parameter) parameters.get(i.next());
+            p.valid();
+        }
 
         return true;
     }
@@ -867,47 +547,18 @@ public class ImageClip
         else
         { s.append(prefix + "<null>\n"); }
 
-        // print the x position sequence
-        s.append(prefix + "xPosition: " );
-        if ( xPosition != null )
-        { s.append(xPosition.toString(prefix + "  ") ); }
-        else
-        { s.append(prefix + "<null>\n"); }
+        // to step through the parameters, we first get the list of names
+        Set names = parameters.keySet();
+        Iterator i = names.iterator();
+        Parameter p = null;
 
-        // print the y position sequence
-        s.append(prefix + "yPosition: " );
-        if ( yPosition != null )
-        { s.append(yPosition.toString(prefix + "  ") ); }
-        else
-        { s.append(prefix + "<null>\n"); }
-
-        // print the rotation sequence
-        s.append(prefix + "rotation: " );
-        if ( rotation != null )
-        { s.append(rotation.toString(prefix + "  ") ); }
-        else
-        { s.append(prefix + "<null>\n"); }
-
-        // print the opacity sequence
-        s.append(prefix + "opacity: " );
-        if ( opacity != null )
-        { s.append(opacity.toString(prefix + "  ") ); }
-        else
-        { s.append(prefix + "<null>\n"); }
-
-        // print the x size sequence
-        s.append(prefix + "xSize: " );
-        if ( xSize != null )
-        { s.append(xSize.toString(prefix + "  ") ); }
-        else
-        { s.append(prefix + "<null>\n"); }
-
-        // print the y size sequence
-        s.append(prefix + "ySize: " );
-        if ( ySize != null )
-        { s.append(ySize.toString(prefix + "  ") ); }
-        else
-        { s.append(prefix + "<null>\n"); }
+        // step through the names
+        while ( i.hasNext() )
+        {
+            // get the parameter for this name
+            p = (Parameter) parameters.get(i.next());
+            s.append(p.toString(prefix));
+        }
 
         return s.toString();
     }
@@ -935,7 +586,7 @@ public class ImageClip
 
 
     /**
-     * This returns an element that represents this imageclips contribution
+     * This returns an element that represents this imageclip's contribution
      * to the specified frame.
      */
     public Element getImage(int frame)
@@ -949,7 +600,8 @@ public class ImageClip
         // if the target frame is not in this clip, return an IAE
         if ( ! inFrame(frame) )
         {
-            throw new IllegalArgumentException("requested frame not inFrame()");
+            throw new IllegalArgumentException(
+                "requested frame not inFrame()");
         }
 
         // create the root <frame> tag
@@ -971,25 +623,24 @@ public class ImageClip
         // create the attributes
         image.setAttribute(
             new Attribute("file", dir + "/" + files[getSource(index)]) );
-        image.setAttribute(
-            new Attribute("xposition", String.valueOf(getXPosition(index))) );
-        image.setAttribute(
-            new Attribute("yposition", String.valueOf(getYPosition(index))) );
-        image.setAttribute(
-            new Attribute("rotation", String.valueOf(getRotation(index))) );
-        image.setAttribute(
-            new Attribute("opacity", String.valueOf(getOpacity(index))) );
 
-        // no defaults for these, so we check first
-        if ( xSize != null )
+        // now process the parameter values
+        // to step through the parameters, we first get the list of names
+        Set names = parameters.keySet();
+        Iterator i = names.iterator();
+        Parameter p = null;
+
+        // step through the names
+        while ( i.hasNext() )
         {
+            // get the parameter for this name
+            p = (Parameter) parameters.get(i.next());
+
+            // set an attribute with the name of the parameter and the
+            // value of the parameter's seq at this index
             image.setAttribute(
-                new Attribute("xsize", String.valueOf(getXSize(index))) );
-        }
-        if ( ySize != null )
-        {
-            image.setAttribute(
-                new Attribute("ysize", String.valueOf(getYSize(index))) );
+                new Attribute(p.getName(),
+                    String.valueOf(p.getSeq().get(index))) );
         }
 
         // return the element
@@ -1010,107 +661,5 @@ public class ImageClip
 
         // otherwise return the right value
         return sourceSeq.get(frame);
-    }
-
-
-    /**
-     * This returns the xposition value for the specified target frame,
-     * including a default value
-     */
-    public int getXPosition(int frame)
-    {
-        // if xposition is null, return the default value
-        if ( xPosition == null )
-        {
-            return XPOSITION_DEFAULT;
-        }
-
-        // otherwise return the right value
-        return xPosition.get(frame);
-    }
-
-
-    /**
-     * This returns the yposition value for the specified target frame,
-     * including a default value
-     */
-    public int getYPosition(int frame)
-    {
-        // if yposition is null, return the default value
-        if ( yPosition == null )
-        {
-            return YPOSITION_DEFAULT;
-        }
-
-        // otherwise return the right value
-        return yPosition.get(frame);
-    }
-
-
-    /**
-     * This returns the rotation value for the specified target frame,
-     * including a default value
-     */
-    public int getRotation(int frame)
-    {
-        // if rotation is null, return the default value
-        if ( rotation == null )
-        {
-            return ROTATION_DEFAULT;
-        }
-
-        // otherwise return the right value
-        return rotation.get(frame);
-    }
-
-
-    /**
-     * This returns the opacity value for the specified target frame,
-     * including a default value
-     */
-    public int getOpacity(int frame)
-    {
-        // if opacity is null, return the default value
-        if ( opacity == null )
-        {
-            return OPACITY_DEFAULT;
-        }
-
-        // otherwise return the right value
-        return opacity.get(frame);
-    }
-
-
-    /**
-     * This returns the xsize value for the specified target frame,
-     * including a default value
-     */
-    public int getXSize(int frame)
-    {
-        // there is no default xSize, so if we don't have one, throw IAE
-        if ( xSize == null )
-        {
-            throw new IllegalArgumentException("xSize is null!");
-        }
-
-        // otherwise return the right value
-        return xSize.get(frame);
-    }
-
-
-    /**
-     * This returns the ySize value for the specified target frame,
-     * including a default value
-     */
-    public int getYSize(int frame)
-    {
-        // there is no default ySize, so if we don't have one, throw IAE
-        if ( ySize == null )
-        {
-            throw new IllegalArgumentException("ySize is null!");
-        }
-
-        // otherwise return the right value
-        return ySize.get(frame);
     }
 }

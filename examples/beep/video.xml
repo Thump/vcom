@@ -12,10 +12,10 @@
     name="name1"
     xsize="320" ysize="240" bgcolor="white"
     fps="30" encoder="xvid" encoderopts="opt1"
-    workroot="build/work" finalroot="build/final"
+    workroot="work" finalroot="final"
     >
 
-    <j:set var="times" value="50" />
+    <j:set var="times" value="5" />
     <j:set var="count" value="0" />
 
     <j:set var="downstart" value="0" />
@@ -36,13 +36,13 @@
 
             <targetseq start="${downstart}"/>
 
-            <xposition>
+            <parameter name='xposition'>
                 <seq start="160" stop="160" step="4"/>
-            </xposition>
+            </parameter>
 
-            <yposition>
+            <parameter name='yposition'>
                 <seq start="0" stop="240" step="8"/>
-            </yposition>
+            </parameter>
         </imageclip>
 
         <!-- black dot up -->
@@ -57,20 +57,21 @@
 
             <targetseq start="${upstart}"/>
 
-            <xposition>
+            <parameter name='xposition'>
                 <seq start="160" stop="160" step="4"/>
-            </xposition>
+            </parameter>
 
-            <yposition>
+            <parameter name='yposition'>
                 <seq start="240" stop="0" step="-8"/>
-            </yposition>
+            </parameter>
         </imageclip>
 
-
+<!--
         <soundclip>
             <source file="../../resources/sounds/beep.wav" start="0.0" stop="1.0" /> 
             <target start="${soundstart}"/>
         </soundclip>
+-->
 
         <j:set var="count" value="${count + 1}"/>
         <j:set var="downstart" value="${downstart + 60}"/>

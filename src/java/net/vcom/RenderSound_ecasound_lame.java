@@ -1,13 +1,11 @@
 
-/*****************************************************************************
+/**************************************************************************
  *
  * VComFrames: video compositor
  *
- * source file: LinuxSoundRender.java
+ * source file: RenderSound_ecasound_lame.java
  * package: net.vcom
  *
- * version 0.3
- * 2005-06-01
  * Copyright (c) 2005, Denis McLaughlin
  * Released under the GPL license, version 2
  *
@@ -51,9 +49,9 @@ import org.apache.tools.ant.DirectoryScanner;
 
 /**
  * This program takes a per-frame xml file and generates the corresponding
- * sound clips.
+ * sound clips using ECAsound and Lame.
  */
-public class LinuxSoundRender implements SoundRenderI
+public class RenderSound_ecasound_lame implements RenderSoundI
 {
     // these are some variables to hold some video-wide values
     private String workRootName = null;
@@ -84,6 +82,13 @@ public class LinuxSoundRender implements SoundRenderI
 
         // parse out the atts and children
         List soundChildren = root.getChildren("sound");
+
+        // if we haven't got any sound clips, skip it
+        if ( soundChildren.size() == 0 )
+        {
+            System.out.println("no sound clips to render");
+            return;
+        }
 
         // parse out the final and work directory from the frames attributes
         workRootName = root.getAttributeValue("workroot");

@@ -1,0 +1,68 @@
+<!ELEMENT video (imageclip+|soundclip*)>
+    <!ATTLIST vcom name CDATA #REQUIRED>
+    <!ATTLIST vcom xsize CDATA #REQUIRED>
+    <!ATTLIST vcom ysize CDATA #REQUIRED>
+    <!ATTLIST vcom bgcolor CDATA #REQUIRED>
+    <!ATTLIST vcom fps CDATA #REQUIRED>
+    <!ATTLIST vcom encoder CDATA #REQUIRED>
+    <!ATTLIST vcom encoderopts CDATA #IMPLIED>
+    <!ATTLIST vcom sourceroot CDATA #REQUIRED>
+    <!ATTLIST vcom workroot CDATA #REQUIRED>
+    <!ATTLIST vcom finalroot CDATA #REQUIRED>
+
+    <!ELEMENT seq (loop)>
+        <!ATTLIST seq start CDATA #REQUIRED>
+        <!ATTLIST seq stop CDATA #REQUIRED>
+        <!ATTLIST seq step CDATA #IMPLIED>
+        <!ATTLIST seq loopcount CDATA #REQUIRED>
+        <!ATTLIST seq loopstart CDATA #IMPLIED>
+        <!ATTLIST seq loopstop CDATA #IMPLIED>
+
+    <!ELEMENT imageclip ((videosource|imagesource)|
+                        sourceseq|targetseq|
+                        xposition?|yposition?|
+                        rotation?|opacity?|
+                        xsize?|ysize?)>
+
+        <!ELEMENT imagesource (fileset?)>
+
+            <!ELEMENT fileset (include+|exclude*)>
+                <!ATTLIST fileset dir CDATA #IMPLIED>
+
+                <!ELEMENT include EMPTY>
+                    <!ATTLIST include name CDATA #IMPLIED>
+                    <!ATTLIST exclude name CDATA #IMPLIED>
+
+        <!ELEMENT sourceseq (seq)>
+
+        <!ELEMENT targetseq EMPTY>
+            <!ATTLIST targetseq start CDATA #REQUIRED>
+
+        <!ELEMENT xposition (seq?)>
+            <!ATTLIST xposition val CDATA #IMPLIED>
+
+        <!ELEMENT yposition (seq?)>
+            <!ATTLIST yposition val CDATA #IMPLIED>
+
+        <!ELEMENT rotation (seq?)>
+            <!ATTLIST rotation val CDATA #IMPLIED>
+
+        <!ELEMENT opacity (seq?)>
+            <!ATTLIST opacity val CDATA #IMPLIED>
+
+        <!ELEMENT xsize (seq?)>
+            <!ATTLIST xsize val CDATA #IMPLIED>
+
+        <!ELEMENT ysize (seq?)>
+            <!ATTLIST ysize val CDATA #IMPLIED>
+
+
+    <!ELEMENT soundclip (soundsource|soundtarget)>
+
+        <!ELEMENT soundsource EMPTY>
+            <!ATTLIST soundsource file CDATA #IMPLIED>
+            <!ATTLIST soundsource start CDATA #IMPLIED>
+            <!ATTLIST soundsource stop CDATA #IMPLIED>
+
+        <!ELEMENT soundtarget EMPTY>
+            <!ATTLIST soundsource start CDATA #REQUIRED>

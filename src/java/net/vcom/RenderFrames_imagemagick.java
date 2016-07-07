@@ -1,12 +1,11 @@
 
-/*****************************************************************************
+/**************************************************************************
  *
  * VComFrames: video compositor
  *
- * source file: LinuxFarmFrameRender.java
+ * source file: RenderFrames_imagemagick.java
  * package: net.vcom
  *
- * 2005-06-01
  * Copyright (c) 2005, Denis McLaughlin
  * Released under the GPL license, version 2
  *
@@ -49,10 +48,10 @@ import org.apache.tools.ant.DirectoryScanner;
 
 
 /**
- * This program takes a per-frame xml file and generates the commands to
- * render the frames into work/farm.cmd.
+ * This program takes a per-frame xml file and generates the corresponding
+ * frames using Image Magick.
  */
-public class LinuxFarmFrameRender implements FrameRenderI
+public class RenderFrames_imagemagick implements RenderFramesI
 {
     // these are some variables to hold some video-wide values
     private String workRootName = null;
@@ -85,7 +84,8 @@ public class LinuxFarmFrameRender implements FrameRenderI
         imageCount = 0;
         skippedImageCount = 0;
 
-        System.out.println("rendering frames with LinuxFarmFrameRender");
+        System.out.println("rendering frames with "
+            + this.getClass().getName() );
 
         // get start time
         renderStartTime = System.currentTimeMillis();
@@ -94,35 +94,38 @@ public class LinuxFarmFrameRender implements FrameRenderI
         Util.validateFrames(root);
 
         // parse out some atts and children
-        xSize = Integer.parseInt(root.getAttributeValue("xsize"));
-        ySize = Integer.parseInt(root.getAttributeValue("ysize"));
-        bgColor = root.getAttributeValue("bgcolor");
+        xSize = 720;
+        if ( root.getAttributeValue("xsize") != null )
+        { xSize = Integer.parseInt(root.getAttributeValue("xsize")); }
+
+        ySize = 480;
+        if ( root.getAttributeValue("ysize") != null )
+        { ySize = Integer.parseInt(root.getAttributeValue("ysize")); }
+
+        bgColor = "white";
+        if ( root.getAttributeValue("bgcolor") != null )
+        { bgColor = root.getAttributeValue("bgcolor"); }
+
         List frameChildren = root.getChildren("frame");
         List soundChildren = root.getChildren("sound");
 
-        // set some default values
-        if ( xSize < 1 )
-        { xSize = 720; }
-        if ( ySize < 1 )
-        { ySize = 480; }
-        if ( bgColor == null )
-        { bgColor = "white"; }
-
         // parse out the final and work directory from the frames attributes
-        workRootName = root.getAttributeValue("workroot");
-        finalRootName = root.getAttributeValue("finalroot");
+        workRootName = "./work";
+        if ( root.getAttributeValue("workroot") != null )
+        { workRootName = root.getAttributeValue("workroot"); }
 
-        // default the workRootName to ./work and finalRootName to ./final
-        if ( workRootName == null )
-        { workRootName = "./work"; }
-        if ( finalRootName == null )
-        { finalRootName = "./final"; }
+        finalRootName = "./final";
+        if ( root.getAttributeValue("finalroot") != null )
+        { finalRootName = root.getAttributeValue("finalroot"); }
 
-        // open the command file
+        // open the command file if needed
         try
         {
-            cmds = new BufferedWriter(
-                new FileWriter(workRootName + "/farm.cmd"));
+            if ( System.getProperty("vcom.cmd.execute").equals("false") )
+            {
+                cmds = new BufferedWriter(
+                    new FileWriter(workRootName + "/renderframes-cmds"));
+            }
         }
         catch (IOException e) { };
 
@@ -139,19 +142,27 @@ public class LinuxFarmFrameRender implements FrameRenderI
         // create the directories
         Util.mkdir(workRootName + "/work-images");
         Util.mkdir(workRootName + "/final-images");
+        Util.mkdir(finalRootName);
 
         // now, step through and process each frame
         Iterator i = frameChildren.iterator();
         while ( i.hasNext() && frameCount <= maxRenderFrame )
         {
             Element frame = (Element) i.next();
-System.out.print("frame " + frameCount + " / " + frameChildren.size() + "\r");
+            System.out.print(
+                "frame " + frameCount + " / " + frameChildren.size() + "\r");
             processFrame(frame);
         }
 
         // get stop time
         renderStopTime = System.currentTimeMillis();
-        try { cmds.close(); } catch (IOException e) { };
+
+        // if we're printing out the commands, close the file
+        try
+        {
+            if ( System.getProperty("vcom.cmd.execute").equals("false") )
+            { cmds.close(); }
+        } catch (IOException e) { };
     }
 
 
@@ -172,7 +183,8 @@ System.out.print("frame " + frameCount + " / " + frameChildren.size() + "\r");
         }
 
         // must have a single frame number attribute
-        int frameNumber = Integer.parseInt(frame.getAttributeValue("number"));
+        int frameNumber =
+            Integer.parseInt(frame.getAttributeValue("number"));
         if ( frameNumber < 0 )
         {
             System.err.println("frame number must be set in frame");
@@ -190,14 +202,16 @@ System.out.print("frame " + frameCount + " / " + frameChildren.size() + "\r");
         }
 
         // Ok, we now process the images
-        try { cmds.write("batch start\n"); } catch (IOException e) { }
+        if ( System.getProperty("vcom.cmd.execute").equals("false") )
+        { try { cmds.write("# batch start\n"); } catch (IOException e) { } }
         processImages(frameNumber, allChildren);
-        try { cmds.write("batch end\n"); } catch (IOException e) { }
+        if ( System.getProperty("vcom.cmd.execute").equals("false") )
+        { try { cmds.write("# batch end\n"); } catch (IOException e) { } }
     }
 
 
     /**
-     * This process the images for the specified frame
+     * This processes the images for the specified frame
      */
     private void processImages(int frameNumber, List images)
     {
@@ -211,22 +225,18 @@ System.out.print("frame " + frameCount + " / " + frameChildren.size() + "\r");
 
         // this is the prefix for the working image
         String workPrefix = new String( workRootName
-            + "/work-images/work-frame" + Util.padLeft(frameNumber) + "-image");
+            + "/work-images/work-frame" + Util.padLeft(frameNumber)
+            + "-image");
 
-        // make the final name
-        String finalFrameName = null;
+        // make the image suffix png by default, but can be overridden
+        String imageSuffix = "png";
         if ( System.getProperty("vcom.render.frame.type") != null )
-        {
-            finalFrameName = new String( workRootName
+        { imageSuffix = System.getProperty("vcom.render.frame.type"); }
+
+        // compose the final frame name
+        String finalFrameName = new String( workRootName
                 + "/final-images/final-frame" + Util.padLeft(frameNumber)
-                + "." + System.getProperty("vcom.render.frame.type") );
-        }
-        else
-        {
-            finalFrameName = new String( workRootName
-                + "/final-images/final-frame" + Util.padLeft(frameNumber)
-                + ".png");
-        }
+                + "." + imageSuffix );
 
         // get the first image for this frame
         Iterator i = images.iterator();
@@ -272,25 +282,41 @@ System.out.print("frame " + frameCount + " / " + frameChildren.size() + "\r");
         // well, we would just copy it, except transcode's xvid encoding
         // gets all wonky with images that have alpha channels, so as a
         // final step, we convert to jpg.  bleh.
+
+        // hmm, I think it's working now, as I seem to have switched back
+        // to png without problems, but I'm still doing convert: stupid
+        // Denis!
+
+        // compose the file names
         File tgt = new File(finalFrameName);
-        File src = new File(workPrefix + Util.padLeft(4,imageStage) + ".png");
+        File src = new File(
+            workPrefix + Util.padLeft(4,imageStage) + "." + imageSuffix);
+
         if (    ! tgt.exists()
              || ! src.exists()
              || tgt.lastModified() < src.lastModified() )
         {
-            try
-            {
-                cmds.write("convert "
-                    + workPrefix + Util.padLeft(4,imageStage) + ".png "
-                    + finalFrameName + "\n");
-            } catch (IOException e) { }
+            // compose the command
+            String cmd = new String("convert " + src + " " + tgt + "\n");
+            
+            // if vcom.cmd.execute is false, we print the commands
+            if ( System.getProperty("vcom.cmd.execute").equals("false") )
+            { 
+                try
+                { cmds.write(cmd); }
+                catch (IOException e) { }
+            }
+            // otherwise execute them
+            else
+            { Util.run(cmd); }
         }
     }
 
 
     /**
      * This takes two composite file strings, and runs them through the
-     * composite command, leaving the result in workRootName+"work-"+frameNumber
+     * composite command, leaving the result in
+     * workRootName+"work-"+frameNumber
      */
     private void composite(
         String layerArgs, String layerFile, String baseArgs, String baseFile,
@@ -335,9 +361,11 @@ System.out.print("frame " + frameCount + " / " + frameChildren.size() + "\r");
             }
         }
 
-        // run the command
-        //Util.run(cmd);
-        try { cmds.write(cmd+"\n"); } catch (IOException e) { }
+        // run the command if execute is not false, otherwise print it
+        if ( System.getProperty("vcom.cmd.execute").equals("false") )
+        { try { cmds.write(cmd+"\n"); } catch (IOException e) { } }
+        else
+        { Util.run(cmd); }
     }
 
 
@@ -357,32 +385,26 @@ System.out.print("frame " + frameCount + " / " + frameChildren.size() + "\r");
 
         StringBuffer s = new StringBuffer();
 
-        // image must have an xposition and yposition
-        String xposition = image.getAttributeValue("xposition");
-        String yposition = image.getAttributeValue("yposition");
-        if ( xposition == null || yposition == null )
-        {
-            System.err.println("image must have xposition and yposition name");
-            System.exit(1);
-        }
+        // get image's xposition and yposition
+        String xposition="0";
+        if ( image.getAttributeValue("xposition") != null )
+        { xposition = image.getAttributeValue("xposition"); }
+
+        String yposition="0";
+        if ( image.getAttributeValue("yposition") != null )
+        { yposition = image.getAttributeValue("yposition"); }
         s.append("-geometry +" + xposition + "+" + yposition + " ");
 
-        // image must have a rotation
-        String rotation = image.getAttributeValue("rotation");
-        if ( rotation == null )
-        {
-            System.err.println("image must have rotation");
-            System.exit(1);
-        }
+        // get image's rotation
+        String rotation = "0";
+        if ( image.getAttributeValue("rotation") != null )
+        { rotation = image.getAttributeValue("rotation"); }
         s.append("-rotate " + rotation + " ");
 
-        // image must have an opacity
-        String opacity = image.getAttributeValue("opacity");
-        if ( opacity == null )
-        {
-            System.err.println("image must have opacity");
-            System.exit(1);
-        }
+        // get image's opacity
+        String opacity = "100";
+        if ( image.getAttributeValue("opacity") != null )
+        { opacity = image.getAttributeValue("opacity"); }
         s.append("-dissolve " + opacity + " ");
 
         return s.toString();

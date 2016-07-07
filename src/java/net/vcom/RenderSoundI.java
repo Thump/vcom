@@ -1,13 +1,11 @@
 
-/*****************************************************************************
+/**************************************************************************
  *
  * VComFrames: video compositor
  *
- * source file: SoundRenderI.java
+ * source file: RenderSoundI.java
  * package: net.vcom
  *
- * version 0.3
- * 2005-06-01
  * Copyright (c) 2005, Denis McLaughlin
  * Released under the GPL license, version 2
  *
@@ -21,7 +19,7 @@ import org.jdom.Element;
  * This program takes a per-frame xml file and generates the corresponding
  * video.
  */
-public interface SoundRenderI
+public interface RenderSoundI
 {
     /**
      * This processes the images and creates the video

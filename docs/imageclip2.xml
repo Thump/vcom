@@ -1,0 +1,65 @@
+
+Old imageclip element, with specific sub-elements for each parameter
+
+<imageclip>
+    <sourcefiles dir="../../resources/images">
+        <include name="dot-*.png"/>
+    </sourcefiles>
+
+    <sourceseq>
+        <seq start="0" stop="29" step="1"/>
+    </sourceseq>
+
+    <xposition>
+        <seq start="160" stop="160" step="4"/>
+    </xposition>
+
+    <yposition>
+        <seq start="0" stop="240" step="8"/>
+    </yposition>
+
+    <opacity>
+        <seq start="0" stop="100" step="2"/>
+    </opacity>
+
+    <targetseq start="${downstart}"/>
+</imageclip>
+
+
+New imageclip element:
+ - generic parameter sub-elements, identified by attributes, rather than
+   by tag names
+ - this allows us to extend the type of parameters an imageclip can take
+ - in the extreme case, you can add support for a new parameter type just
+   by modifying the render classes (or writing your own), and thus never
+   need to touch the vcom source itself
+ - sourcefiles, sourceseq, and targetseq remain as real tags, since they're
+   privileged, and must be present
+ - if a non-present parameter is queried, ImageClip returns a null, and
+   it will be up to the querying class (the renderer, typically) what value
+   to use as a default
+
+<imageclip>
+    <sourcefiles dir="../../resources/images">
+        <include name="dot-*.png"/>
+    </sourcefiles>
+
+    <sourceseq>
+        <seq start="0" stop="29" step="1"/>
+    </sourceseq>
+
+    <targetseq start="${downstart}"/>
+
+    <parameter name="xposition">
+        <seq start="160" stop="160" step="4"/>
+    </parameter>
+
+    <parameter name="yposition">
+        <seq start="0" stop="240" step="8"/>
+    </parameter>
+
+    <parameter name="opacity">
+        <seq start="0" stop="100" step="2"/>
+    </parameter>
+</imageclip>
+

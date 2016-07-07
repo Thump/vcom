@@ -1,0 +1,4 @@
+vcom.jelly.debug=false
+vcom.jelly.video.batchsize=30
+vcom.cmd.debug=true
+vcom.cmd.execute=true
