@@ -1,0 +1,14 @@
+#!/bin/sh
+
+# figure out where our lib directory is
+libdir=`dirname $0`/../lib
+
+# generate the classpath
+CLASSPATH=
+for jar in $libdir/*
+do
+  CLASSPATH=$CLASSPATH:$jar
+done
+
+# run vcom with the classpath and the passed arguments
+java $JAVA_OPTS -cp $CLASSPATH net.vcom.VComRender $*

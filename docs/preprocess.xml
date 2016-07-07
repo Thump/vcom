@@ -1,0 +1,568 @@
+<!--
+    name
+        Determines the final video name, and the name of intermediate
+        work directories.  This is a required attribute.
+
+    size
+        Determines the final video size.  This is a required attribute.
+
+    bgcolor
+        This is the default background color.
+
+    scale
+        All source images, absolute coordinates, and final video sizes
+        are scaled by this: allows early drafts to be smaller and thus
+        render more quickly.  This is an optional attribute, and defaults
+        to 1.
+
+    fps
+        Determines the final video frame rate.  This is a required
+        attribute.
+
+    encoder
+        This string must mean something to the back-end video encoder.
+        This is a required attribute.
+
+    encoderopts
+        This string must mean something to the back-end video encoder.
+        This is an option attribute, and defaults to "".
+
+    sourceroot
+        This is the parent directory of all image sequence and sound clip
+        source files: this directory is prepended to all relative source
+        directories.  This is an optional attribute, and defaults to "./".
+
+    workroot
+        This is the location of all non-transient intermediate files:
+        files which may have use from one render to the next, but which
+        need not be shared between renderfarm nodes.  This is an optional
+        attribute, and defaults to "/tmp/vcom/<name>/work".
+
+    finalroot
+        This is the directory used for all non-transient intermediate files
+        and final files: both are files which may be required by other nodes
+        within the renderfarm.  This is an optional attribute and defaults
+        to "./final/<name>".
+-->
+<video
+    name="name1"
+    size="720x480"
+    scale="0.5"
+    fps="30"
+    encoder="foo"
+    encoderopts="baz"
+    sourceroot="dir"
+    workroot="dir"
+    tmproot="dir"
+    finalroot="dir"
+    >
+
+    <!--
+        Each image sequence is a single sequence of images to be applied to
+        the final video.  Because it can source non-contiguous
+        frames and can target non-contiguous frames, it is best defined by
+        being sourced from images in a single directory: multiple sequences
+        can be sourced from a directory of source images, but any given
+        sequence can only come from a single directory of images.  There
+        must be at least one sequence defined.
+    -->
+    <imagesequence>
+
+        <!--
+            The source tag defines the location from which a sequence is
+            sourced: it can be a directory of files or it can be a video
+            file.  The source tag is mandatory.
+
+            dir
+                The directory which contains the files identified by the
+                filter or file tags.  If it is a relative path, the
+                sequence.sourceroot tag will be prepended to it.  This tag
+                is optional, and defaults to "./".
+
+            filter
+                Mutually exclusive with the file tag: this identifies a
+                regular expression which is used to generate the list of
+                source files from within the directory identified by the
+                dir tag.  Files which match the filter are included.  This
+                tag is optional: if neither filter nor file is specified,
+                then filter is assigned a default value of ".*".
+
+            file
+                Mutually exclusive with the filter tag: this identifies
+                a single video file which will be used as the source of
+                images this sequence.  The valid
+                file formats are those which will be recognized by the
+                rendering backend.  This tag is optional: if neither
+                filter nor file is specified, then filter is assumed.
+
+            start
+                This indicates the starting point in the source: it can 
+                be represented as the number of frames offset from the
+                beginning of the set of files of the first frame of the
+                video (first frame is 0), or it can be the number of hours
+                (HH), minutes (MM), seconds (SS), and frames (ff) from
+                the beginning of the video source.  This attribute is
+                optional, and has a default value of "0".
+
+            end
+                This indicates the ending point in the source: it can be
+                represented as the number of frames offset from the
+                beginning of the set of files of the first frame of the
+                video (first frame is 0), or it can be the number of hours
+                (HH), minutes (MM), seconds (SS), and frames (ff) from
+                the beginning of the video source.  This attribute
+                is optional, and has a default value of the number of frames
+                in the set of source files (if filter is used), or the
+                number of seconds in the source file (if file is used).
+
+            step
+                This attribute determines the number of frames between
+                each target frame: it is an optional attribute, and defaults
+                to 1.
+
+            stepinc
+                This attributes determines the number of frames by which
+                the step value is changed between each target frame.
+                It is an optional attribute, and defaults to 0.
+
+            loop
+                This is a boolean attribute, and determines whether, once
+                the end of the source has been reached, the sequence should
+                loop to the beginning of the source.  It is an optional
+                attribute, and defaults to a value of "false".
+
+            loopstart
+                If loop is true, then this determines where in the source
+                the loop will restart from: it is used to set the start
+                point of all subsequent iterations through the source set
+                after the first one.  It is specified using the same syntax
+                as for the start attribute.  It is an optional attribute,
+                and defaults to the value of start.
+
+            loopend
+                If loop is true, then this determines where in the source
+                the loop will end: it is used to end the loop for all
+                iterations after the first one.  It is specified using the
+                same syntax as for the end attribute.  It is an optional
+                attribute, and defaults to the value of end.
+
+            loopcount
+                This determines the number of times the loop will iterate.
+                This attribute is optional, and defaults to unlimited.
+
+            loopstepinc
+                This attributes determines the number of frames by which
+                the step value is changed between each loop iteration.
+                It is an optional attribute, and defaults to 0.
+        -->
+        <source
+            dir="dir"
+            filter=".*.png"
+            file="foo.mpg"
+            start="0" | "HH:MM:SS.ff"
+            end="10" | "HH:MM:SS:ff"
+            step="1"
+            stepinc="0"
+            loop="true"
+            loopstart="0" | "HH:MM:SS.ff"
+            loopend="0" | "HH:MM:SS.ff"
+            loopcount="1"
+            loopstepinc="0"
+            /> 
+
+        <!--
+            The target tag is the mechanism by which the source images are
+            targetted into the final video.  If there are more source images
+            than target images, then only as many source images as there
+            are target images will be inserted.
+
+            start
+                This attribute determines in which target frame the
+                insertion should begin.  It is an optional attribute,
+                and defaults to "0".
+
+            end
+                This attribute determines in which target frame the
+                insertion should stop.  It is an optional attribute:
+                if it is not specified, the source images will be
+                continually inserted until there are no more source
+                images.  Note however, that by using the loop value in the
+                source tag and an unspecified target end, the target frames
+                could become very large.
+
+            step
+                This attribute determines the number of frames between
+                each target frame: it is an optional attribute, and defaults
+                to 1.
+
+            stepinc
+                This attributes determines the number of frames by which
+                the step value is changed between each target frame.
+                It is an optional attribute, and defaults to 0.
+
+            loop
+                This is a boolean attribute, and determines whether, once
+                the target end has been reached, the source images should
+                begin being inserted at the beginning again.  It is an
+                optional attribute, and defaults to a value of "false".
+
+            loopstart
+                If loop is true, then this determines where in the target
+                the loop will restart from: it is used to set the start
+                point of all subsequent iterations through the target set
+                after the first one.  It is specified using the same syntax
+                as for the start attribute.  It is an optional attribute,
+                and defaults to the value of start.
+
+            loopend
+                If loop is true, then this determines where in the target
+                the loop will end: it is used to end the loop for all
+                iterations after the first one.  It is specified using the
+                same syntax as for the end attribute.  It is an optional
+                attribute, and defaults to the value of end.
+
+            loopcount
+                This determines the number of times the loop will iterate.
+                This attribute is optional, and defaults to unlimited.
+
+            loopstepinc
+                This attributes determines the number of frames by which
+                the step value is changed between each loop iteration.
+                It is an optional attribute, and defaults to 0.
+        -->
+        <target
+            start="0"
+            end="10"
+            step="1"
+            stepinc="0"
+            loop="true"
+            loopstart="0"
+            loopend="0"
+            loopcount="1"
+            loopstepinc="0"
+            />
+
+        <!--
+            Position is the location in the target image where the source
+            image will be overlayed.
+
+            start
+                This marks the first location on the target where the image
+                will be overlayed.  It can be specified in terms of absolute
+                pixels, or in terms of a percentage of the dimension.  This
+                is an optional attribute, and defaults to "0x0".
+
+            end
+                This marks the final location on the target where the image
+                will be overlayed.  It is specified in the same way as start.
+                This value is mutually exclusive with step: either one or the
+                other can be specified, but not both.  If neither are
+                specified, then end will have a default value equal to start.
+
+            step
+                This indicates the x and y step between each target frame
+                insertion.  This parameter is mutually exclusive with end.
+
+            stepinc
+                This indicates the change in the step value between each
+                target frame insertion.  It is an optional attribute, and
+                has a default value of "0x0".
+
+            gravity
+                This value is determines how the position value is used to
+                position the image.  It has the same meaning as the gravity
+                parameter of the ImageMagick software package.
+        -->
+        <position
+            start="#x#" | "%x%"
+            end="#x#" | "%x%"
+            step="#x#" | "%x%"
+            stepinc="#x#" | "%x%"
+            gravity="string"
+            />
+
+        <!--
+            Rotation is the rotation of the source image prior to being
+            overlayed onto the target image.
+
+            start
+                This determines the rotation of the first frame to be
+                overlayed onto the target frames.  It is specified in
+                degrees.  This is an optional attribute, and defaults
+                to "0".
+
+            end
+                This marks the rotation of the final image to be overlayed
+                onto the target frames.  It is specified in the same way
+                as start.  This value is mutually exclusive with step:
+                either one or the other can be specified, but not both.
+                If neither are specified, then end will have a default
+                value equal to start.
+
+            step
+                This indicates the change between each target frame
+                insertion.  This parameter is mutually exclusive with end.
+
+            stepinc
+                This indicates the change in the step value between each
+                target frame insertion.  It is an optional attribute, and
+                has a default value of "0".
+        -->
+        <rotation
+            start="#"
+            end="#"
+            step="#"
+            stepinc="#"
+            />
+
+        <!--
+            opacity is the translucency of the source image prior to being
+            overlayed onto the target image.  This varies from 0 (completly
+            translucent, that is, the overlayed image will not be visible
+            at all), to 100 (completely opaque, obscuring all pixels in the
+            target frame.
+
+            start
+                This determines the opacity of the first frame to be
+                overlayed onto the target frames.  This is an optional
+                attribute, and defaults to "100".
+
+            end
+                This marks the opacity of the final image to be overlayed
+                onto the target frames.  It is specified in the same way
+                as start.  This value is mutually exclusive with step:
+                either one or the other can be specified, but not both.
+                If neither are specified, then end will have a default
+                value equal to start.
+
+            step
+                This indicates the change between each target frame
+                insertion.  This parameter is mutually exclusive with end.
+
+            stepinc
+                This indicates the change in the step value between each
+                target frame insertion.  It is an optional attribute, and
+                has a default value of "0".
+        -->
+        <opacity
+            start="#"
+            end="#"
+            step="#"
+            stepinc="#"
+            />
+
+        <!--
+            Size is the size of the source image prior to overlaying it
+            on the target frame.  It is specified either as absolute pixels
+            or as a percentage of the original image size.  If only one
+            dimension is specified, then the other dimension will be computed   
+            to keep the ratio constant.
+
+            start
+                This marks the size of the first source image to be overlayed
+                onto the target frame.  It can be specified as absolute
+                X and Y dimensions (XxY), as a single absolute dimension
+                (either X or xY), as a percentage of both original dimensions
+                (%x%), or as a percentage of a single dimension (% or x%).
+                If only a single dimension is specified, the other dimension
+                will be inferred from the ratio of the original image.
+                This is an optional attribute, and defaults to "100%x100%".
+
+            end
+                This marks the size of the final source image to be
+                overlayed on the target frame.  It is specified in the same
+                way as start.  This value is mutually exclusive with step:
+                either one or the other can be specified, but not both.  If
+                neither are specified, then end will have a default value
+                equal to start.
+
+            step
+                This indicates the x and y step between each target frame
+                insertion.  This parameter is mutually exclusive with end.
+
+            stepinc
+                This indicates the change in the step value between each
+                target frame insertion.  It is an optional attribute, and
+                has a default value of "0x0".
+        -->
+        <size
+            start="#x#" | "#" | "x#" | "%x%" | "%" | "x%"
+            end="#x#" | "#" | "x#" | "%x%" | "%" | "x%"
+            step="#x#" | "%x%"
+            stepinc="#x#" | "%x%"
+            />
+
+        <!--
+            Crop is a mechanism which allows only a cropped section of the
+            source image to be overlayed on the target frame.
+
+            offsetstart
+                This marks the initial offset from the source image upper
+                left corner from which the cropped image should be taken.
+                It can be specified in terms of absolute pixels, or in
+                terms of a percentage of the source image dimensions.  This
+                is an optional attribute, and defaults to "0x0".
+
+            offsetend
+                This marks the final offset from the source image upper
+                left corner from which the cropped image should be taken.
+                It can be specified in terms of absolute pixels, or in terms
+                of a percentage of the source image dimensions.  This
+                parameter is mutually exclusive with offsetstep: only one
+                can be specified.  If neither are specified, then offsetend
+                has a default value equal to offsetstart.
+
+            offsetstep
+                This indicates the change in the x and y offset between
+                each target frame insertion.  This parameter is mutually
+                exclusive with offsetend.
+
+            offsetstepinc
+                This indicates the change in the offsetstep value between
+                each target frame insertion.  It is an optional attribute,
+                and has a default value of "0x0".
+
+            sizestart
+                This marks the intial size of the crop from the source
+                image.  It can be specified in terms of absolute pixels,
+                or in terms of a percentage of the source image dimensions.
+                This is a mandatory attribute.
+
+            sizeend
+                This marks the final size of the cropt from the source
+                image.  It can be specified in terms of absolute pixels,
+                or in terms of a percentage of the source image dimensions.
+                This parameter is mutually exclusive with sizestep: only
+                one can be specified.  If neither are specified, then
+                sizeend has a default value equal to sizestart.
+
+            sizestep
+                This indicates the change in the x and y size between
+                each target frame insertion.  This parameter is mutually
+                exclusive with sizeend.
+
+            sizestepinc
+                This indicates the change in the sizestep value between
+                each target frame insertion.  It is an optional attribute,
+                and has a default value of "0x0".
+        -->
+        <crop
+            offsetstart="#x#" | "%x%"
+            offsetend="#x#" | "%x%"
+            offsetstep="#x#" | "%x%"
+            offsetstepin="#x#" | "%x%"
+            sizestart="#x#" | "%x%"
+            sizeend="#x#" | "%x%"
+            sizestep="#x#" | "%x%"
+            sizestepinc="#x#" | "%x%"
+            />
+
+    </imagesequence>
+
+    <!--
+    -->
+    <soundclip>
+
+        <!--
+            The source tag specifies the file from which a clip is
+            sourced.  The source tag is mandatory.
+
+            dir
+                The directory which contains the file identified by the
+                file tag.  If it is a relative path, the
+                video.sourceroot tag will be prepended to it.  This tag
+                is optional, and defaults to "./".
+
+            file
+                This identifies
+                a single file which will be used as the source of
+                sound for this clip.  The valid
+                file formats are those which will be recognized by the
+                rendering backend.  This tag is mandatory.
+
+            start
+                This indicates the starting point in the source, represented
+                as the number of seconds (including fractional seconds)
+                from the beginning of the sound file.  This attribute is
+                optional, and has a default value of "0".
+
+            end
+                This indicates the ending point in the source, represented
+                as the number of seconds (including fractional seconds)
+                from the beginning of the sound file.  This attribute
+                is optional, and has a default value of the length of
+                the file less the start time.
+
+            loop
+                This is a boolean attribute, and determines whether, once
+                the end of the source has been reached, the clip should
+                loop to the beginning of the source.  It is an optional
+                attribute, and defaults to a value of "false".
+
+            loopstart
+                If loop is true, then this determines where in the source
+                the loop will restart from: it is used to set the start
+                point of all subsequent iterations through the source set
+                after the first one.  It is specified using the same syntax
+                as for the start attribute.  It is an optional attribute,
+                and defaults to the value of start.
+
+            loopend
+                If loop is true, then this determines where in the source
+                the loop will end: it is used to end the loop for all
+                iterations after the first one.  It is specified using the
+                same syntax as for the end attribute.  It is an optional
+                attribute, and defaults to the value of end.
+
+            loopcount
+                This determines the number of times the loop will iterate.
+                This attribute is optional, and defaults to unlimited.
+        -->
+        <source
+            dir="dir"
+            file="foo.wav"
+            start="0.0"
+            end="0.0"
+            loop="true"
+            loopstart="0.0"
+            loopend="0.0"
+            loopcount="1"
+            /> 
+
+        <!--
+            The target tag is the mechanism by which the source clip is
+            targetted into the final video.  If the source clip is longer
+            than the targeted period, then the clip is terminated at the
+            end of the target period.
+
+            start
+                This attribute is the time from the beginning of the target
+                video (in fractional seconds) at which the clip should start
+                to be inserted.  It is an optional attribute, and defaults
+                to "0".
+
+            end
+                This attribute is the time from the beginning of the target
+                video (in fractional seconds) when the insertion should stop.
+                It is an optional attribute: if it is not specified, the
+                source images will be continually inserted until there are
+                no more source images.  Note however, that by using the loop
+                value in the source tag and an unspecified target end, the
+                target frames could become very large.
+
+            rate
+                This attribute is a sound frequency scalar, allowing the
+                clip to be inserted at a higher frequency than the original.
+                It is expressed as a (possibly fractional) multiple of the
+                original frequency.  It is an optional attribute, and has a
+                default value of 1.
+        -->
+        <target
+            start="0.0"
+            end="10.0"
+            rate="0.0"
+            />
+
+    </soundclip>
+
+</video>

@@ -1,0 +1,14 @@
+
+ - to provide a program by which the mechanics of video editing can
+   be separated from the contents of the video being edited
+
+ - to make it easy to composite multiple video sequences into a final
+   video
+
+ - to make it easy to composite multiple audio clips into a final video
+
+ - to provide a framework to support complex mappings of source to
+   target image mappings
+
+ - to do the above with the support of easily parallelizable rendering
+   engines

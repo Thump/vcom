@@ -1,0 +1,119 @@
+<?xml version="1.0"?>
+
+<!-- vcom -->
+<project name="vcom" default="build" basedir=".">
+
+   
+    <!-- Compiles the source code -->
+    <target name="init" >
+        <path id="classpath">
+            <pathelement location="."/>
+            <pathelement location="build/classes"/>
+            <pathelement location="resources/jars/jdom1-1.0.jar"/>
+            <pathelement location="resources/jars/xercesImpl.jar"/>
+            <pathelement location="resources/jars/commons-jelly-1.0-RC1.jar"/>
+            <pathelement location="resources/jars/dom4j-1.4-dev-8.jar"/>
+            <pathelement location="resources/jars/commons-logging-1.0.4.jar"/>
+            <pathelement location="resources/jars/commons-collections-3.1.jar"/>
+            <pathelement location="resources/jars/commons-beanutils-1.7.0.jar"/>
+            <pathelement location="resources/jars/commons-jexl-1.0.jar"/>
+            <pathelement location="resources/jars/commons-jelly-tags-util-1.1.1.jar"/>
+            <pathelement location="resources/jars/commons-jelly-tags-ant-1.0.jar"/>
+            <pathelement location="resources/jars/commons-grant-1.0-beta-5.jar"/>
+            <pathelement location="resources/jars/ant-1.6.jar"/>
+            <pathelement location="resources/jars/ant-junit-1.6.2.jar"/>
+        </path>
+        <property name="classpath" refid="classpath"/>
+    </target>
+
+
+    <!-- clean the directory -->
+    <target name="clean" depends="init" >
+        <delete dir="build"/>
+    </target>
+
+
+    <!-- compiles the source code -->
+    <target name="build" depends="init" >
+
+        <mkdir dir="build/classes"/>
+
+        <javac destdir="build/classes"
+            debug="on"
+            deprecation="off"
+            optimize="on"
+            classpathref="classpath">
+            <src path="src/"/>
+        </javac>
+
+        <jar destfile="build/vcom-0.3.jar"
+            basedir="build/classes"
+        />
+
+        <!-- create the distribution directories -->
+        <mkdir dir="build/vcom-0.3"/>
+        <mkdir dir="build/vcom-0.3/bin"/>
+        <mkdir dir="build/vcom-0.3/lib"/>
+        <mkdir dir="build/vcom-0.3/lib"/>
+
+        <!-- copy the jars in -->
+        <copy todir="build/vcom-0.3/lib">
+            <fileset dir="resources/jars">
+                <include name="**/*.jar"/>
+            </fileset>
+            <fileset dir="build">
+                <include name="vcom-0.3.jar"/>
+            </fileset>
+        </copy>
+
+        <!-- copy the scripts in -->
+        <copy todir="build/vcom-0.3/bin">
+            <fileset dir="src/script">
+                <include name="vcom*"/>
+            </fileset>
+        </copy>
+        <chmod dir="build/vcom-0.3/bin" perm="ugo+x" includes="*"/>
+    </target>
+
+
+    <!-- runs the junit tests, put the output in build/ -->
+    <target name="test" depends="init">
+        <junit printsummary="yes" fork="yes" haltonfailure="yes">
+            <classpath refid="classpath"/>
+            <formatter type="plain"/>
+
+            <batchtest fork="yes" todir="build">
+                <fileset dir="src/test">
+                    <include name="**/Test*.java"/>
+                </fileset>
+            </batchtest>
+        </junit>
+    </target>
+
+
+    <!-- runs the client code -->
+    <target name="process" depends="init" >
+        <exec failonerror="true" executable="build/vcom-0.3/bin/vcomprocess">
+            <arg line="video.xml"/>
+        </exec>
+    </target>
+
+
+    <!-- runs the client code on the frames doc -->
+    <target name="render" depends="init" >
+        <exec failonerror="true" executable="build/vcom-0.3/bin/vcomrender">
+            <arg line="/tmp/mff/work/frames.xml"/>
+        </exec>
+    </target>
+
+
+    <!-- generates the javadoc -->
+    <target name="javadoc">
+        <javadoc packagenames="net.vcom" destdir="build/javadoc">
+            <fileset dir="src" defaultexcludes="yes">
+                <include name="**/*.java"/>
+            </fileset>
+        </javadoc>
+    </target>
+
+</project>

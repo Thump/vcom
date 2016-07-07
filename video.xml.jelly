@@ -1,0 +1,104 @@
+
+
+<video name="name1" finalroot="build/final" fps="30" workroot="build/work" ysize="240" xsize="320" encoder="xvid" encoderopts="opt1" bgcolor="white">
+
+        
+        <imageclip><sourcefiles dir="resources/images">
+                <include name="dot-*.png"></include>
+            </sourcefiles><sourceseq><seq stop="29" step="1" start="0"></seq></sourceseq><targetseq start="0"></targetseq><xposition><seq stop="160" step="4" start="160"></seq></xposition><yposition><seq stop="240" step="8" start="0"></seq></yposition></imageclip>
+
+        
+        <imageclip><sourcefiles dir="resources/images">
+                <include name="dot-*.png"></include>
+            </sourcefiles><sourceseq><seq stop="29" step="1" start="0"></seq></sourceseq><targetseq start="30"></targetseq><xposition><seq stop="160" step="4" start="160"></seq></xposition><yposition><seq stop="0" step="-8" start="240"></seq></yposition></imageclip>
+
+
+        <soundclip><source stop="1.0" file="resources/sounds/beep.wav" start="0.0"></source><target start="0.8"></target></soundclip>
+
+        
+        
+        
+        
+
+    
+
+        
+        <imageclip><sourcefiles dir="resources/images">
+                <include name="dot-*.png"></include>
+            </sourcefiles><sourceseq><seq stop="29" step="1" start="0"></seq></sourceseq><targetseq start="60"></targetseq><xposition><seq stop="160" step="4" start="160"></seq></xposition><yposition><seq stop="240" step="8" start="0"></seq></yposition></imageclip>
+
+        
+        <imageclip><sourcefiles dir="resources/images">
+                <include name="dot-*.png"></include>
+            </sourcefiles><sourceseq><seq stop="29" step="1" start="0"></seq></sourceseq><targetseq start="90"></targetseq><xposition><seq stop="160" step="4" start="160"></seq></xposition><yposition><seq stop="0" step="-8" start="240"></seq></yposition></imageclip>
+
+
+        <soundclip><source stop="1.0" file="resources/sounds/beep.wav" start="0.0"></source><target start="2.8"></target></soundclip>
+
+        
+        
+        
+        
+
+    
+
+        
+        <imageclip><sourcefiles dir="resources/images">
+                <include name="dot-*.png"></include>
+            </sourcefiles><sourceseq><seq stop="29" step="1" start="0"></seq></sourceseq><targetseq start="120"></targetseq><xposition><seq stop="160" step="4" start="160"></seq></xposition><yposition><seq stop="240" step="8" start="0"></seq></yposition></imageclip>
+
+        
+        <imageclip><sourcefiles dir="resources/images">
+                <include name="dot-*.png"></include>
+            </sourcefiles><sourceseq><seq stop="29" step="1" start="0"></seq></sourceseq><targetseq start="150"></targetseq><xposition><seq stop="160" step="4" start="160"></seq></xposition><yposition><seq stop="0" step="-8" start="240"></seq></yposition></imageclip>
+
+
+        <soundclip><source stop="1.0" file="resources/sounds/beep.wav" start="0.0"></source><target start="4.8"></target></soundclip>
+
+        
+        
+        
+        
+
+    
+
+        
+        <imageclip><sourcefiles dir="resources/images">
+                <include name="dot-*.png"></include>
+            </sourcefiles><sourceseq><seq stop="29" step="1" start="0"></seq></sourceseq><targetseq start="180"></targetseq><xposition><seq stop="160" step="4" start="160"></seq></xposition><yposition><seq stop="240" step="8" start="0"></seq></yposition></imageclip>
+
+        
+        <imageclip><sourcefiles dir="resources/images">
+                <include name="dot-*.png"></include>
+            </sourcefiles><sourceseq><seq stop="29" step="1" start="0"></seq></sourceseq><targetseq start="210"></targetseq><xposition><seq stop="160" step="4" start="160"></seq></xposition><yposition><seq stop="0" step="-8" start="240"></seq></yposition></imageclip>
+
+
+        <soundclip><source stop="1.0" file="resources/sounds/beep.wav" start="0.0"></source><target start="6.8"></target></soundclip>
+
+        
+        
+        
+        
+
+    
+
+        
+        <imageclip><sourcefiles dir="resources/images">
+                <include name="dot-*.png"></include>
+            </sourcefiles><sourceseq><seq stop="29" step="1" start="0"></seq></sourceseq><targetseq start="240"></targetseq><xposition><seq stop="160" step="4" start="160"></seq></xposition><yposition><seq stop="240" step="8" start="0"></seq></yposition></imageclip>
+
+        
+        <imageclip><sourcefiles dir="resources/images">
+                <include name="dot-*.png"></include>
+            </sourcefiles><sourceseq><seq stop="29" step="1" start="0"></seq></sourceseq><targetseq start="270"></targetseq><xposition><seq stop="160" step="4" start="160"></seq></xposition><yposition><seq stop="0" step="-8" start="240"></seq></yposition></imageclip>
+
+
+        <soundclip><source stop="1.0" file="resources/sounds/beep.wav" start="0.0"></source><target start="8.8"></target></soundclip>
+
+        
+        
+        
+        
+
+    </video>
+
