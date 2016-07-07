@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.io.File;
+import java.lang.reflect.Array;
 
 import org.apache.tools.ant.DirectoryScanner;
 import org.jdom.Document;
@@ -957,6 +958,15 @@ public class ImageClip
         // get the file list
         String[] files = sourceFiles.getIncludedFiles();
         String dir = sourceFiles.getBasedir().getPath();
+
+        // check that the files array has enough elements
+        if ( getSource(index) >= Array.getLength(files) )
+        {
+            throw new IllegalArgumentException(
+                "insufficient source files for:\n" +
+                "  frame:" + frame +
+                "  directory:" + sourceFiles.getBasedir().getName() );
+        }
 
         // create the attributes
         image.setAttribute(

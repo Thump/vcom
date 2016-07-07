@@ -3,11 +3,14 @@
 # this is the usage routine
 usage()
 {
-  echo "$0 [-f <frame>] <video.xml>"
+  echo "$0 [-f|-s|-v] [-m <frame>] <video.xml>"
   echo
   echo "where:"
   echo "  <frame> is the optional maximum frame to render to"
   echo "  <video.xml> is the video XML file to render"
+  echo "  -f: render only video frames"
+  echo "  -s: render only sound"
+  echo "  -v: render only video"
   echo
 }
 
@@ -15,7 +18,7 @@ usage()
 libdir=`dirname $0`/../lib
 
 # if $1 is -f, then $2 is a frame number, and we shift off both of them
-if [ "$1" = "-f" ]
+if [ "$1" = "-m" ]
 then
   # check for a valid $2: if not, print usage and exit
   if [ -n "$2" ]
@@ -24,7 +27,7 @@ then
     if echo $2 | grep -q -v "^[0-9]*$"
     then
       echo
-      echo "error: argument for -f must be a number"
+      echo "error: argument for -m must be a number"
       echo
       usage
       exit 1
@@ -32,13 +35,13 @@ then
 
     # pull frame number out, shift off arguments
     maxframe="$2"
-    maxframearg="-Dvcom.render.maxframe=$maxframe"
+    maxframearg="-Dvcom.render.frame.maxframe=$maxframe"
     shift
     shift
   else
     # we didn't have a $2
     echo
-    echo "error: must specify argument for -f"
+    echo "error: must specify argument for -m"
     echo
     usage
     exit 1
@@ -47,8 +50,8 @@ then
   echo "Setting max frame to $maxframe"
 fi
 
-# if we have no arguments or more than one argument, show usage and exit
-if [ -z "$1" -o -n "$2" ]
+# if we have no arguments, show usage and exit
+if [ -z "$1" ]
 then
   echo
   echo "error: must specify video XML file to process"
@@ -63,6 +66,9 @@ for jar in $libdir/*
 do
   CLASSPATH=$CLASSPATH:$jar
 done
+
+# increase max memory size
+JAVA_OPTS="$JAVA_OPTS -Xmx512m"
 
 # run vcom with the classpath and the passed arguments
 #echo java $maxframearg $JAVA_OPTS -cp $CLASSPATH net.vcom.VComRender $*

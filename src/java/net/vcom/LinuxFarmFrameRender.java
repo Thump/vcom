@@ -3,10 +3,9 @@
  *
  * VComFrames: video compositor
  *
- * source file: LinuxFrameRender.java
+ * source file: LinuxFarmFrameRender.java
  * package: net.vcom
  *
- * version 0.3
  * 2005-06-01
  * Copyright (c) 2005, Denis McLaughlin
  * Released under the GPL license, version 2
@@ -25,6 +24,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
@@ -48,10 +49,10 @@ import org.apache.tools.ant.DirectoryScanner;
 
 
 /**
- * This program takes a per-frame xml file and generates the corresponding
- * video.
+ * This program takes a per-frame xml file and generates the commands to
+ * render the frames into work/farm.cmd.
  */
-public class LinuxFrameRender implements FrameRenderI
+public class LinuxFarmFrameRender implements FrameRenderI
 {
     // these are some variables to hold some video-wide values
     private String workRootName = null;
@@ -70,6 +71,9 @@ public class LinuxFrameRender implements FrameRenderI
     // this is the max frame we render: we initialize it below
     private long maxRenderFrame = 0;
 
+    // the output command file
+    private BufferedWriter cmds = null;
+
 
     /**
      * This processes a frames document
@@ -81,7 +85,7 @@ public class LinuxFrameRender implements FrameRenderI
         imageCount = 0;
         skippedImageCount = 0;
 
-        System.out.println("rendering frames with LinuxFrameRender");
+        System.out.println("rendering frames with LinuxFarmFrameRender");
 
         // get start time
         renderStartTime = System.currentTimeMillis();
@@ -114,6 +118,14 @@ public class LinuxFrameRender implements FrameRenderI
         if ( finalRootName == null )
         { finalRootName = "./final"; }
 
+        // open the command file
+        try
+        {
+            cmds = new BufferedWriter(
+                new FileWriter(workRootName + "/farm.cmd"));
+        }
+        catch (IOException e) { };
+
         // check for max render frame: if it's set via a property, we
         // use that, otherwise it was initialized to a v large number
         maxRenderFrame = frameChildren.size();
@@ -127,7 +139,6 @@ public class LinuxFrameRender implements FrameRenderI
         // create the directories
         Util.mkdir(workRootName + "/work-images");
         Util.mkdir(workRootName + "/final-images");
-        Util.mkdir(finalRootName);
 
         // now, step through and process each frame
         Iterator i = frameChildren.iterator();
@@ -138,8 +149,9 @@ System.out.print("frame " + frameCount + " / " + frameChildren.size() + "\r");
             processFrame(frame);
         }
 
-        // get start time
+        // get stop time
         renderStopTime = System.currentTimeMillis();
+        try { cmds.close(); } catch (IOException e) { };
     }
 
 
@@ -178,7 +190,9 @@ System.out.print("frame " + frameCount + " / " + frameChildren.size() + "\r");
         }
 
         // Ok, we now process the images
+        try { cmds.write("batch start\n"); } catch (IOException e) { }
         processImages(frameNumber, allChildren);
+        try { cmds.write("batch end\n"); } catch (IOException e) { }
     }
 
 
@@ -200,8 +214,19 @@ System.out.print("frame " + frameCount + " / " + frameChildren.size() + "\r");
             + "/work-images/work-frame" + Util.padLeft(frameNumber) + "-image");
 
         // make the final name
-        String finalFrameName = new String( workRootName
-            + "/final-images/final-frame" + Util.padLeft(frameNumber) + ".jpg");
+        String finalFrameName = null;
+        if ( System.getProperty("vcom.render.frame.type") != null )
+        {
+            finalFrameName = new String( workRootName
+                + "/final-images/final-frame" + Util.padLeft(frameNumber)
+                + "." + System.getProperty("vcom.render.frame.type") );
+        }
+        else
+        {
+            finalFrameName = new String( workRootName
+                + "/final-images/final-frame" + Util.padLeft(frameNumber)
+                + ".png");
+        }
 
         // get the first image for this frame
         Iterator i = images.iterator();
@@ -249,11 +274,16 @@ System.out.print("frame " + frameCount + " / " + frameChildren.size() + "\r");
         // final step, we convert to jpg.  bleh.
         File tgt = new File(finalFrameName);
         File src = new File(workPrefix + Util.padLeft(4,imageStage) + ".png");
-        if ( tgt.lastModified() < src.lastModified() )
+        if (    ! tgt.exists()
+             || ! src.exists()
+             || tgt.lastModified() < src.lastModified() )
         {
-            Util.run("convert "
-                + workPrefix + Util.padLeft(4,imageStage) + ".png "
-                + finalFrameName);
+            try
+            {
+                cmds.write("convert "
+                    + workPrefix + Util.padLeft(4,imageStage) + ".png "
+                    + finalFrameName + "\n");
+            } catch (IOException e) { }
         }
     }
 
@@ -306,7 +336,8 @@ System.out.print("frame " + frameCount + " / " + frameChildren.size() + "\r");
         }
 
         // run the command
-        Util.run(cmd);
+        //Util.run(cmd);
+        try { cmds.write(cmd+"\n"); } catch (IOException e) { }
     }
 
 

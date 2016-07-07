@@ -3,6 +3,38 @@ vcom CHANGES
 
 ---------------------------------------------------------------------------
 
+  November 29, 2006
+  Denis McLaughlin
+   - added a property for the final frame type, vcom.render.frame.type, set
+     to the text string of the image type, for example jpg or png
+
+  November 24, 2006
+  Denis McLaughlin
+   - added frame count to processing
+
+  November 19, 2006
+  Denis McLaughlin
+   - added -f option to ln command
+   - tweaked logic for generating the final-images version
+   - changed type of final images to be png
+
+  November 16, 2006
+  Denis McLaughlin
+   - added getopt.jar file
+   - added support for -f, -s, and -v
+   - changed existing -f option to -m
+   - implemented new frame render class, LinuxFarmFrameRender
+   - added support to specify the frame render class with the
+     vcom.render.frame.class property: i teh r0x0r!
+
+  November 15, 2006
+  Denis McLaughlin
+   - changed render to print commands rather than run them
+   - added a variable for the version in build.xml
+   - added support for rendering frames to a command file
+
+version 0.4 complete
+
   August 7, 2006
   Denis McLaughlin
    - moved valid() from sub-class to Seq

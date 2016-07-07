@@ -639,6 +639,9 @@ public class Video
      */
     public Document getFrames()
     {
+        int count = 0;
+        int last = 0;
+
         // create the root <frames> tag
         Element frames = new Element("frames");
 
@@ -685,10 +688,13 @@ public class Video
         setOldImages();
 
         // step through all the frames
-        for (int frame=firstFrame(); frame<=lastFrame(); frame++)
+        last = lastFrame();
+        for (int frame=firstFrame(); frame<=last; frame++)
         {
             // get the frame
+            System.out.print("frame " + count + " / " + last + "\r");
             frames.addContent( getFrame(frame) );
+            count++;
         }
 
         // step through all sound clips

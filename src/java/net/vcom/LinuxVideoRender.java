@@ -148,15 +148,15 @@ public class LinuxVideoRender implements VideoRenderI
         // we allow it to be overridden here in two ways: if
         // vcom.encode.maxframe is set, we use that, else if 
         // vcom.render.maxframe is set, we use that
-        if ( System.getProperty("vcom.encode.maxframe") != null )
+        if ( System.getProperty("vcom.encode.video.maxframe") != null )
         {
             maxEncodeFrame = Integer.parseInt(
-                System.getProperty("vcom.encode.maxframe"));
+                System.getProperty("vcom.encode.video.maxframe"));
         }
-        else if ( System.getProperty("vcom.render.maxframe") != null )
+        else if ( System.getProperty("vcom.render.frame.maxframe") != null )
         {
             maxEncodeFrame = Integer.parseInt(
-                System.getProperty("vcom.render.maxframe"));
+                System.getProperty("vcom.render.frame.maxframe"));
         }
         System.out.println("setting max encode frame to " + maxEncodeFrame);
 
@@ -263,7 +263,7 @@ public class LinuxVideoRender implements VideoRenderI
         // now we run the video transcode
         Util.run("transcode -z --use_rgb -g " + xSize + "x" + ySize
             + " -i " + workRootName + "/filenames-batch" + Util.padLeft(batch)
-            + " -x imlist,null -y xvid,null -f 30 "
+            + " -x imlist,null -y xvid,null -f 15 "
             + " -o " + workRootName + "/work-videos/video-batch"
             + Util.padLeft(batch)
             + ".avi -H 0");

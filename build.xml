@@ -3,6 +3,9 @@
 <!-- vcom -->
 <project name="vcom" default="build" basedir=".">
 
+
+    <!-- set a variable for the version -->
+    <property name="version" value="0.5"/>
    
     <!-- Compiles the source code -->
     <target name="init" >
@@ -22,6 +25,7 @@
             <pathelement location="resources/jars/commons-grant-1.0-beta-5.jar"/>
             <pathelement location="resources/jars/ant-1.6.jar"/>
             <pathelement location="resources/jars/ant-junit-1.6.2.jar"/>
+            <pathelement location="resources/jars/gnu-getopt.jar"/>
         </path>
         <property name="classpath" refid="classpath"/>
     </target>
@@ -46,33 +50,33 @@
             <src path="src/"/>
         </javac>
 
-        <jar destfile="build/vcom-0.4.jar"
+        <jar destfile="build/vcom-${version}.jar"
             basedir="build/classes"
         />
 
         <!-- create the distribution directories -->
-        <mkdir dir="build/vcom-0.4"/>
-        <mkdir dir="build/vcom-0.4/bin"/>
-        <mkdir dir="build/vcom-0.4/lib"/>
-        <mkdir dir="build/vcom-0.4/lib"/>
+        <mkdir dir="build/vcom-${version}"/>
+        <mkdir dir="build/vcom-${version}/bin"/>
+        <mkdir dir="build/vcom-${version}/lib"/>
+        <mkdir dir="build/vcom-${version}/lib"/>
 
         <!-- copy the jars in -->
-        <copy todir="build/vcom-0.4/lib">
+        <copy todir="build/vcom-${version}/lib">
             <fileset dir="resources/jars">
                 <include name="**/*.jar"/>
             </fileset>
             <fileset dir="build">
-                <include name="vcom-0.4.jar"/>
+                <include name="vcom-${version}.jar"/>
             </fileset>
         </copy>
 
         <!-- copy the scripts in -->
-        <copy todir="build/vcom-0.4/bin">
+        <copy todir="build/vcom-${version}/bin">
             <fileset dir="src/script">
                 <include name="vcom*"/>
             </fileset>
         </copy>
-        <chmod dir="build/vcom-0.4/bin" perm="ugo+x" includes="*"/>
+        <chmod dir="build/vcom-${version}/bin" perm="ugo+x" includes="*"/>
     </target>
 
 
@@ -93,7 +97,7 @@
 
     <!-- runs the client code -->
     <target name="process" depends="init" >
-        <exec failonerror="true" executable="build/vcom-0.4/bin/vcomprocess">
+        <exec failonerror="true" executable="build/vcom-${version}/bin/vcomprocess">
             <arg line="video.xml"/>
         </exec>
     </target>
@@ -101,7 +105,7 @@
 
     <!-- runs the client code on the frames doc -->
     <target name="render" depends="init" >
-        <exec failonerror="true" executable="build/vcom-0.4/bin/vcomrender">
+        <exec failonerror="true" executable="build/vcom-${version}/bin/vcomrender">
             <arg line="/tmp/mff/work/frames.xml"/>
         </exec>
     </target>

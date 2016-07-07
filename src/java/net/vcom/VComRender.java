@@ -43,6 +43,8 @@ import org.apache.commons.jelly.JellyContext;
 import org.apache.commons.jelly.XMLOutput;
 import org.apache.commons.jelly.JellyException;
 
+import gnu.getopt.Getopt;
+
 /**
  * This program takes a per-frame xml file and generates the corresponding
  * video.
@@ -51,6 +53,9 @@ public class VComRender
 {
     static String workRootName = null;
     static String finalRootName = null;
+    static Boolean renderFrames = true;
+    static Boolean renderSound = true;
+    static Boolean renderVideo = true;
 
     public static void main(String[] args)
     {
@@ -61,12 +66,33 @@ public class VComRender
             // load properties
             Util.loadProperties();
 
+            // process the arguments with getopt
+            Getopt g = new Getopt("vcomrender", args, "fsv");
+            int c;
+            String arg;
+            while ((c = g.getopt()) != -1)
+            {
+                switch(c)
+                {
+                    case 'f':
+                        renderFrames=true; renderSound=false; renderVideo=false;
+                        break;
+                    case 's':
+                        renderFrames=false; renderSound=true; renderVideo=false;
+                        break;
+                    case 'v':
+                        renderFrames=false; renderSound=false; renderVideo=true;
+                        break;
+                    default:
+                }
+            }
+
             // check we have enough arguments
-            if ( args.length != 1 )
+            if ( args.length < 1 )
             { usage(); }
 
             // process the specified xml file and get the root element
-            doc = Util.jellyReadDoc(args[0]);
+            doc = Util.jellyReadDoc(args[g.getOptind()]);
             Element root = doc.getRootElement();
 
             // if the root is null, that's bad
@@ -80,19 +106,48 @@ public class VComRender
             if ( root.getName().equals("frames") )
             {
                 // get the default frame renderer
-                FrameRenderI fr = new LinuxFrameRender();
-                fr.renderFrames(root);
-                fr.printStats();
+                if ( renderFrames )
+                {
+                    System.out.println("rendering frames");
+
+                    // we default to using net.vcom.LinuxFrameRender,
+                    // unless overridden by the property
+                    String frameRenderClass = "net.vcom.LinuxFrameRender";
+                    if ( System.getProperty("vcom.render.frame.class") != null )
+                    {
+                        frameRenderClass =
+                            System.getProperty("vcom.render.frame.class");
+                    }
+
+                    // use reflection to instantiate the requisite class
+                    System.out.println("instantiating " + frameRenderClass +
+                        " to render frames");
+                    FrameRenderI fr =
+                        (FrameRenderI)
+                            Class.forName(frameRenderClass).newInstance();
+
+                    // now that we have the class, we use it
+                    fr.renderFrames(root);
+                    fr.printStats();
+                }
 
                 // get the default sound renderer
-                SoundRenderI sr = new LinuxSoundRender();
-                sr.renderSounds(root);
-                sr.printStats();
+                if ( renderSound )
+                {
+                    System.out.println("rendering sound");
+                    SoundRenderI sr = new LinuxSoundRender();
+                    sr.renderSounds(root);
+                    sr.printStats();
+                }
 
                 // get the default video rendere
-                VideoRenderI vr = new LinuxVideoRender();
-                vr.renderVideo(root);
-                vr.printStats();
+                if ( renderVideo )
+                {
+                    System.out.println("rendering video");
+                    VideoRenderI vr = new LinuxVideoRender();
+                    vr.renderVideo(root);
+                    vr.printStats();
+                }
 
                 System.exit(0);
             }

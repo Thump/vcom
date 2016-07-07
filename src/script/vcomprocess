@@ -10,5 +10,8 @@ do
   CLASSPATH=$CLASSPATH:$jar
 done
 
+# increase max memory size
+JAVA_OPTS="$JAVA_OPTS -Xmx512m"
+
 # run vcom with the classpath and the passed arguments
 java $JAVA_OPTS -cp $CLASSPATH net.vcom.VComProcess $*
