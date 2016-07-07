@@ -3,6 +3,30 @@ vcom CHANGES
 
 ---------------------------------------------------------------------------
 
+  August 7, 2006
+  Denis McLaughlin
+   - moved valid() from sub-class to Seq
+   - added a typeValid() in Seq sub-class
+
+  August 5, 2006
+  Denis McLaughlin
+   - changed Seq to abstract class
+   - changed Seq class to SeqLoop, extending Seq
+   - fixed ImageClip and TestImageClip to match above changes
+   - moved TestSeq to TestSeqLoop
+
+  July 23, 2006
+  Denis McLaughlin
+   - added a max frame for rendering and encoding
+   - changed encoder to encode only rendered frames (still broken cus
+     of batches?) 
+
+  July 19, 2006
+  Denis McLaughlin
+   - added status output as frames are rendered
+
+version 0.3 complete
+
   September 26, 2005
   Denis McLaughlin
    - added a length option to image clips, to specify the maximum length

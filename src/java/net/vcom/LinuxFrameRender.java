@@ -67,6 +67,10 @@ public class LinuxFrameRender implements FrameRenderI
     private long renderStartTime = 0;
     private long renderStopTime = 0;
 
+    // this is the max frame we render: we initialize it below
+    private long maxRenderFrame = 0;
+
+
     /**
      * This processes a frames document
      */
@@ -108,6 +112,16 @@ public class LinuxFrameRender implements FrameRenderI
         if ( finalRootName == null )
         { finalRootName = "./final"; }
 
+        // check for max render frame: if it's set via a property, we
+        // use that, otherwise it was initialized to a v large number
+        maxRenderFrame = frameChildren.size();
+        if ( System.getProperty("vcom.render.maxframe") != null )
+        {
+            maxRenderFrame = Integer.parseInt(
+                System.getProperty("vcom.render.maxframe"));
+        }
+        System.out.println("setting max render frame to " + maxRenderFrame);
+
         // create the directories
         Util.mkdir(workRootName + "/work-images");
         Util.mkdir(workRootName + "/final-images");
@@ -115,9 +129,10 @@ public class LinuxFrameRender implements FrameRenderI
 
         // now, step through and process each frame
         Iterator i = frameChildren.iterator();
-        while ( i.hasNext() )
+        while ( i.hasNext() && frameCount <= maxRenderFrame )
         {
             Element frame = (Element) i.next();
+System.out.print("frame " + frameCount + " / " + frameChildren.size() + "\r");
             processFrame(frame);
         }
 

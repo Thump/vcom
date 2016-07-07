@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE video SYSTEM "video.dtd">
+
+<j:jelly trim="false"
+    xmlns:a="jelly:ant"
+    xmlns:j="jelly:core"
+    xmlns:u="jelly:util"
+    xmlns:x="jelly:xml"
+    >
+
+<video
+    name="name1"
+    xsize="320" ysize="240" bgcolor="white"
+    fps="30" encoder="xvid" encoderopts="opt1"
+    workroot="build/work" finalroot="build/final"
+    >
+
+    <j:set var="times" value="50" />
+    <j:set var="count" value="0" />
+
+    <j:set var="downstart" value="0" />
+    <j:set var="upstart" value="30" />
+    <j:set var="soundstart" value="0.95" />
+
+    <j:while test="${count != times}">
+
+        <!-- black dot down -->
+        <imageclip>
+            <sourcefiles dir="../../resources/images">
+                <include name="dot-*.png"/>
+            </sourcefiles>
+
+            <sourceseq>
+                <seq start="0" stop="29" step="1"/>
+            </sourceseq>
+
+            <targetseq start="${downstart}"/>
+
+            <xposition>
+                <seq start="160" stop="160" step="4"/>
+            </xposition>
+
+            <yposition>
+                <seq start="0" stop="240" step="8"/>
+            </yposition>
+        </imageclip>
+
+        <!-- black dot up -->
+        <imageclip>
+            <sourcefiles dir="../../resources/images">
+                <include name="dot-*.png"/>
+            </sourcefiles>
+
+            <sourceseq>
+                <seq start="0" stop="29" step="1"/>
+            </sourceseq>
+
+            <targetseq start="${upstart}"/>
+
+            <xposition>
+                <seq start="160" stop="160" step="4"/>
+            </xposition>
+
+            <yposition>
+                <seq start="240" stop="0" step="-8"/>
+            </yposition>
+        </imageclip>
+
+
+        <soundclip>
+            <source file="../../resources/sounds/beep.wav" start="0.0" stop="1.0" /> 
+            <target start="${soundstart}"/>
+        </soundclip>
+
+        <j:set var="count" value="${count + 1}"/>
+        <j:set var="downstart" value="${downstart + 60}"/>
+        <j:set var="upstart" value="${upstart + 60}"/>
+        <j:set var="soundstart" value="${soundstart + 2}"/>
+
+    </j:while>
+
+</video>
+
+</j:jelly>

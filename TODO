@@ -1,0 +1,27 @@
+ - ssh farm
+ x status list of frames as generated
+ - vcomrender called with same xml as vcomprocess
+ - get size working
+ x render up to certain frame, encode only up to certain frame
+ - ability to refer to len, start, and stop of a frame sequence by name,
+   rather than munging around with variables: have to watch for recursion
+ - remove attribute specific tags: make them generic, with
+   a name which the renderer maps to a switch, and different types of
+   sequences, floating, integer, pair, matrix
+   <seq type="float" name="rotation" start, stop, loopstart, loopstop,
+    step, loopcount, length>
+ - add support for interpolated seqs: provide data points, define interpolating
+   algorithm (linear, linear-easeI, linear-easeO, linear-easeIO, spline)
+ - frame independent effects: fade in, fade out, mathmap; maybe have to
+   separate composite operations from final frame stuff
+
+<seq attribute="rotate"
+     value="int|float|floor|round"
+     type="1d|2d|3d|matrix"
+     algorithm="linear|spline|quaternion"
+
+     start="" stop="" step="" loopcount="" loopstart="" loopstop=""
+     len=""
+
+     <point x="" y="">
+/>

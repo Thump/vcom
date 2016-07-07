@@ -1,7 +1,61 @@
 #!/bin/sh
 
+# this is the usage routine
+usage()
+{
+  echo "$0 [-f <frame>] <video.xml>"
+  echo
+  echo "where:"
+  echo "  <frame> is the optional maximum frame to render to"
+  echo "  <video.xml> is the video XML file to render"
+  echo
+}
+
 # figure out where our lib directory is
 libdir=`dirname $0`/../lib
+
+# if $1 is -f, then $2 is a frame number, and we shift off both of them
+if [ "$1" = "-f" ]
+then
+  # check for a valid $2: if not, print usage and exit
+  if [ -n "$2" ]
+  then
+    # check the frame field is an invalid number
+    if echo $2 | grep -q -v "^[0-9]*$"
+    then
+      echo
+      echo "error: argument for -f must be a number"
+      echo
+      usage
+      exit 1
+    fi
+
+    # pull frame number out, shift off arguments
+    maxframe="$2"
+    maxframearg="-Dvcom.render.maxframe=$maxframe"
+    shift
+    shift
+  else
+    # we didn't have a $2
+    echo
+    echo "error: must specify argument for -f"
+    echo
+    usage
+    exit 1
+  fi
+
+  echo "Setting max frame to $maxframe"
+fi
+
+# if we have no arguments or more than one argument, show usage and exit
+if [ -z "$1" -o -n "$2" ]
+then
+  echo
+  echo "error: must specify video XML file to process"
+  echo
+  usage
+  exit 1
+fi
 
 # generate the classpath
 CLASSPATH=
@@ -11,4 +65,5 @@ do
 done
 
 # run vcom with the classpath and the passed arguments
-java $JAVA_OPTS -cp $CLASSPATH net.vcom.VComRender $*
+#echo java $maxframearg $JAVA_OPTS -cp $CLASSPATH net.vcom.VComRender $*
+java $maxframearg $JAVA_OPTS -cp $CLASSPATH net.vcom.VComRender $*

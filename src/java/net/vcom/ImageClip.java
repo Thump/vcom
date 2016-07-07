@@ -382,7 +382,8 @@ public class ImageClip
         // get the element, turn it into a document, create seq for it
         Element seq = (Element) children.get(0);
         Document d = new Document((Element) seq.clone());
-        setSourceSeq(new Seq(d));
+        //setSourceSeq(new Seq(d));
+        setSourceSeq(Seq.createSeq(d));
     }
 
 
@@ -492,7 +493,8 @@ public class ImageClip
         // get the element, turn it into a document, create seq for it
         Element seq = (Element) children.get(0);
         Document d = new Document((Element) seq.clone());
-        setXPosition(new Seq(d));
+        //setXPosition(new Seq(d));
+        setXPosition(Seq.createSeq(d));
     }
 
 
@@ -542,7 +544,8 @@ public class ImageClip
         // get the element, turn it into a document, create seq for it
         Element seq = (Element) children.get(0);
         Document d = new Document((Element) seq.clone());
-        setYPosition(new Seq(d));
+        //setYPosition(new Seq(d));
+        setYPosition(Seq.createSeq(d));
     }
 
 
@@ -592,7 +595,8 @@ public class ImageClip
         // get the element, turn it into a document, create seq for it
         Element seq = (Element) children.get(0);
         Document d = new Document((Element) seq.clone());
-        setXSize(new Seq(d));
+        //setXSize(new Seq(d));
+        setXSize(Seq.createSeq(d));
     }
 
 
@@ -642,7 +646,8 @@ public class ImageClip
         // get the element, turn it into a document, create seq for it
         Element seq = (Element) children.get(0);
         Document d = new Document((Element) seq.clone());
-        setYSize(new Seq(d));
+        //setYSize(new Seq(d));
+        setYSize(Seq.createSeq(d));
     }
 
 
@@ -692,7 +697,8 @@ public class ImageClip
         // get the element, turn it into a document, create seq for it
         Element seq = (Element) children.get(0);
         Document d = new Document((Element) seq.clone());
-        setOpacity(new Seq(d));
+        //setOpacity(new Seq(d));
+        setOpacity(Seq.createSeq(d));
     }
 
 
@@ -742,7 +748,8 @@ public class ImageClip
         // get the element, turn it into a document, create seq for it
         Element seq = (Element) children.get(0);
         Document d = new Document((Element) seq.clone());
-        setRotation(new Seq(d));
+        //setRotation(new Seq(d));
+        setRotation(Seq.createSeq(d));
     }
 
 

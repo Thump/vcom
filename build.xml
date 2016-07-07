@@ -46,33 +46,33 @@
             <src path="src/"/>
         </javac>
 
-        <jar destfile="build/vcom-0.3.jar"
+        <jar destfile="build/vcom-0.4.jar"
             basedir="build/classes"
         />
 
         <!-- create the distribution directories -->
-        <mkdir dir="build/vcom-0.3"/>
-        <mkdir dir="build/vcom-0.3/bin"/>
-        <mkdir dir="build/vcom-0.3/lib"/>
-        <mkdir dir="build/vcom-0.3/lib"/>
+        <mkdir dir="build/vcom-0.4"/>
+        <mkdir dir="build/vcom-0.4/bin"/>
+        <mkdir dir="build/vcom-0.4/lib"/>
+        <mkdir dir="build/vcom-0.4/lib"/>
 
         <!-- copy the jars in -->
-        <copy todir="build/vcom-0.3/lib">
+        <copy todir="build/vcom-0.4/lib">
             <fileset dir="resources/jars">
                 <include name="**/*.jar"/>
             </fileset>
             <fileset dir="build">
-                <include name="vcom-0.3.jar"/>
+                <include name="vcom-0.4.jar"/>
             </fileset>
         </copy>
 
         <!-- copy the scripts in -->
-        <copy todir="build/vcom-0.3/bin">
+        <copy todir="build/vcom-0.4/bin">
             <fileset dir="src/script">
                 <include name="vcom*"/>
             </fileset>
         </copy>
-        <chmod dir="build/vcom-0.3/bin" perm="ugo+x" includes="*"/>
+        <chmod dir="build/vcom-0.4/bin" perm="ugo+x" includes="*"/>
     </target>
 
 
@@ -93,7 +93,7 @@
 
     <!-- runs the client code -->
     <target name="process" depends="init" >
-        <exec failonerror="true" executable="build/vcom-0.3/bin/vcomprocess">
+        <exec failonerror="true" executable="build/vcom-0.4/bin/vcomprocess">
             <arg line="video.xml"/>
         </exec>
     </target>
@@ -101,7 +101,7 @@
 
     <!-- runs the client code on the frames doc -->
     <target name="render" depends="init" >
-        <exec failonerror="true" executable="build/vcom-0.3/bin/vcomrender">
+        <exec failonerror="true" executable="build/vcom-0.4/bin/vcomrender">
             <arg line="/tmp/mff/work/frames.xml"/>
         </exec>
     </target>

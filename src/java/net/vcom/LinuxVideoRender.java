@@ -122,7 +122,7 @@ public class LinuxVideoRender implements VideoRenderI
         scanner.scan();
 
         // and call the render interface with the files
-        renderVideo(scanner.getIncludedFiles());
+        renderVideo(scanner.getIncludedFiles(), frameChildren.size());
 
         // record the stop time
         encodeStopTime = System.currentTimeMillis();
@@ -133,7 +133,7 @@ public class LinuxVideoRender implements VideoRenderI
      * This takes an array of file names and creates a partial videos from
      * them in batches of 10.
      */
-    private void renderVideo(String[] files)
+    private void renderVideo(String[] files, int maxEncodeFrame)
     {
         // default to 10, override with property
         int batchSize = 10;
@@ -144,13 +144,30 @@ public class LinuxVideoRender implements VideoRenderI
         }
         ArrayList fileBatch = new ArrayList(batchSize);
 
+        // maxEncodeFrame is passed in as the number of frames in the video:
+        // we allow it to be overridden here in two ways: if
+        // vcom.encode.maxframe is set, we use that, else if 
+        // vcom.render.maxframe is set, we use that
+        if ( System.getProperty("vcom.encode.maxframe") != null )
+        {
+            maxEncodeFrame = Integer.parseInt(
+                System.getProperty("vcom.encode.maxframe"));
+        }
+        else if ( System.getProperty("vcom.render.maxframe") != null )
+        {
+            maxEncodeFrame = Integer.parseInt(
+                System.getProperty("vcom.render.maxframe"));
+        }
+        System.out.println("setting max encode frame to " + maxEncodeFrame);
+
+
         // step through the file name array batchSize at a time
         List fileList = Arrays.asList(files);
         Collections.sort(fileList);
         Iterator i = fileList.iterator();
         frameCount = 0;
         partialVideoCount = 0;
-        while ( i.hasNext() )
+        while ( i.hasNext() && frameCount <= maxEncodeFrame )
         {
             fileBatch.add(i.next());
             frameCount++;

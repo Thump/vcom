@@ -1,0 +1,44 @@
+
+<seq
+  attribute="opacity"
+  name="foo"
+  basetype="int|float"
+  type="1d|2d|3d|matrix"
+  interpolation="linear|spline"
+
+  start=
+  stop=
+  step=
+  loopcount=
+  loopstart=
+  loopstop=
+  len=
+  >
+
+  <point
+    x=
+    y=
+  />
+
+</seq>
+
+ - every sequence has the start/stop/step parameters
+ - if the <point> or <function> element is left out, it implies a function
+   of x=y
+ - the <point> or <function> element define the function, the start/stop
+   loop define x input into the function
+ - start/stop are always integer valued, since they are equivalent to
+   integer indices into the collection of function values
+
+class:
+  abstract class Seq
+  LoopSeq extends Seq
+  LinearSeq extends Seq
+  SplineSeq extends Seq
+
+Seq:
+  abstract valid()
+  abstract hasNext()
+  abstract getNext()
+  abstract get()
+  createSeq()

@@ -3,7 +3,7 @@
  *
  * VCom: video compositor test
  *
- * source file: TestSeq.java  
+ * source file: TestSeqLoop.java  
  * package: net.vcom
  *
  * version 0.3
@@ -24,29 +24,29 @@ import junit.framework.TestCase;
 import org.jdom.Document;
 import org.jdom.input.SAXBuilder;
 
-import net.vcom.Seq;
+import net.vcom.SeqLoop;
 
 
 /**
- * This class runs tests against the Seq class.
+ * This class runs tests against the SeqLoop class.
  */
-public class TestSeq extends TestCase
+public class TestSeqLoop extends TestCase
 {
     /**
-     * Checks that the Seq constructor returns a non-null object
+     * Checks that the SeqLoop constructor returns a non-null object
      */
     public void testDefaultConstructor()
     {
-        Seq s = null;
+        SeqLoop s = null;
 
         // create a Video
-        s = new Seq();
-        assertNotNull("null Seq returned from constructor", s);
+        s = new SeqLoop();
+        assertNotNull("null SeqLoop returned from constructor", s);
     }
 
 
     /**
-     * Tests that the attributes of Seq can be set and got
+     * Tests that the attributes of SeqLoop can be set and got
      */
     public void testSetAndGet()
     {
@@ -56,11 +56,11 @@ public class TestSeq extends TestCase
         int loopCount = 4;
         int loopStart = 5;
         int loopStop = 6;
-        Seq s = null;
+        SeqLoop s = null;
 
         // create a seq
-        s = new Seq();
-        assertNotNull("null Seq returned from constructor", s);
+        s = new SeqLoop();
+        assertNotNull("null SeqLoop returned from constructor", s);
 
         // set and check the stop
         s.setStop(stop);
@@ -104,15 +104,15 @@ public class TestSeq extends TestCase
      */
     public void testStopBeforeStart()
     {
-        Seq s = null;
+        SeqLoop s = null;
         boolean result = false;
 
         // positive step, start before stop: should work
         try
         {
             // create a seq
-            s = new Seq();
-            assertNotNull("null Seq returned from constructor", s);
+            s = new SeqLoop();
+            assertNotNull("null SeqLoop returned from constructor", s);
 
             // set start to 1 and stop 2: should work
             s.setStart(1);
@@ -133,8 +133,8 @@ public class TestSeq extends TestCase
         try
         {
             // create a seq
-            s = new Seq();
-            assertNotNull("null Seq returned from constructor", s);
+            s = new SeqLoop();
+            assertNotNull("null SeqLoop returned from constructor", s);
 
             // set the bad vals
             s.setStart(2);
@@ -159,8 +159,8 @@ public class TestSeq extends TestCase
         try
         {
             // create a seq
-            s = new Seq();
-            assertNotNull("null Seq returned from constructor", s);
+            s = new SeqLoop();
+            assertNotNull("null SeqLoop returned from constructor", s);
 
             // set start to 1 and stop 2: should work
             s.setStart(1);
@@ -185,8 +185,8 @@ public class TestSeq extends TestCase
         try
         {
             // create a seq
-            s = new Seq();
-            assertNotNull("null Seq returned from constructor", s);
+            s = new SeqLoop();
+            assertNotNull("null SeqLoop returned from constructor", s);
 
             // set the bad vals
             s.setStart(1);
@@ -211,8 +211,8 @@ public class TestSeq extends TestCase
         try
         {
             // create a seq
-            s = new Seq();
-            assertNotNull("null Seq returned from constructor", s);
+            s = new SeqLoop();
+            assertNotNull("null SeqLoop returned from constructor", s);
 
             // set start to 1 and stop 2: should work
             s.setStart(1);
@@ -236,8 +236,8 @@ public class TestSeq extends TestCase
         try
         {
             // create a seq
-            s = new Seq();
-            assertNotNull("null Seq returned from constructor", s);
+            s = new SeqLoop();
+            assertNotNull("null SeqLoop returned from constructor", s);
 
             // set the bad vals
             s.setStart(1);
@@ -261,8 +261,8 @@ public class TestSeq extends TestCase
         try
         {
             // create a seq
-            s = new Seq();
-            assertNotNull("null Seq returned from constructor", s);
+            s = new SeqLoop();
+            assertNotNull("null SeqLoop returned from constructor", s);
 
             // set start to 1 and stop 2: should work
             s.setStart(1);
@@ -286,8 +286,8 @@ public class TestSeq extends TestCase
         try
         {
             // create a seq
-            s = new Seq();
-            assertNotNull("null Seq returned from constructor", s);
+            s = new SeqLoop();
+            assertNotNull("null SeqLoop returned from constructor", s);
 
             // set the bad vals
             s.setStart(1);
@@ -311,8 +311,8 @@ public class TestSeq extends TestCase
         try
         {
             // create a seq
-            s = new Seq();
-            assertNotNull("null Seq returned from constructor", s);
+            s = new SeqLoop();
+            assertNotNull("null SeqLoop returned from constructor", s);
 
             // set seq params
             s.setStart(3);
@@ -333,8 +333,8 @@ public class TestSeq extends TestCase
         try
         {
             // create a seq
-            s = new Seq();
-            assertNotNull("null Seq returned from constructor", s);
+            s = new SeqLoop();
+            assertNotNull("null SeqLoop returned from constructor", s);
 
             // set the bad vals
             s.setStart(1);
@@ -359,8 +359,8 @@ public class TestSeq extends TestCase
         try
         {
             // create a seq
-            s = new Seq();
-            assertNotNull("null Seq returned from constructor", s);
+            s = new SeqLoop();
+            assertNotNull("null SeqLoop returned from constructor", s);
 
             // set start to 1 and stop 2: should work
             s.setStart(3);
@@ -385,8 +385,8 @@ public class TestSeq extends TestCase
         try
         {
             // create a seq
-            s = new Seq();
-            assertNotNull("null Seq returned from constructor", s);
+            s = new SeqLoop();
+            assertNotNull("null SeqLoop returned from constructor", s);
 
             // set the bad vals
             s.setStart(3);
@@ -411,8 +411,8 @@ public class TestSeq extends TestCase
         try
         {
             // create a seq
-            s = new Seq();
-            assertNotNull("null Seq returned from constructor", s);
+            s = new SeqLoop();
+            assertNotNull("null SeqLoop returned from constructor", s);
 
             // set start to 1 and stop 2: should work
             s.setStart(3);
@@ -436,8 +436,8 @@ public class TestSeq extends TestCase
         try
         {
             // create a seq
-            s = new Seq();
-            assertNotNull("null Seq returned from constructor", s);
+            s = new SeqLoop();
+            assertNotNull("null SeqLoop returned from constructor", s);
 
             // set the bad vals
             s.setStart(3);
@@ -461,8 +461,8 @@ public class TestSeq extends TestCase
         try
         {
             // create a seq
-            s = new Seq();
-            assertNotNull("null Seq returned from constructor", s);
+            s = new SeqLoop();
+            assertNotNull("null SeqLoop returned from constructor", s);
 
             // set start to 1 and stop 2: should work
             s.setStart(3);
@@ -486,8 +486,8 @@ public class TestSeq extends TestCase
         try
         {
             // create a seq
-            s = new Seq();
-            assertNotNull("null Seq returned from constructor", s);
+            s = new SeqLoop();
+            assertNotNull("null SeqLoop returned from constructor", s);
 
             // set the bad vals
             s.setStart(3);
@@ -513,11 +513,11 @@ public class TestSeq extends TestCase
      */
     public void testNegativeStartStopStep()
     {
-        Seq s = null;
+        SeqLoop s = null;
 
         // create a seq
-        s = new Seq();
-        assertNotNull("null Seq returned from constructor", s);
+        s = new SeqLoop();
+        assertNotNull("null SeqLoop returned from constructor", s);
 
         // set start to -1: should fail
         try
@@ -548,11 +548,11 @@ public class TestSeq extends TestCase
      */
     public void testNegativeLoopStartLoopStopLoopCount()
     {
-        Seq s = null;
+        SeqLoop s = null;
 
         // create a seq
-        s = new Seq();
-        assertNotNull("null Seq returned from constructor", s);
+        s = new SeqLoop();
+        assertNotNull("null SeqLoop returned from constructor", s);
 
         // set loopStart to -1: should fail
         try
@@ -594,12 +594,12 @@ public class TestSeq extends TestCase
      */
     public void testStep0StartEqualStop()
     {
-        Seq s = null;
+        SeqLoop s = null;
         boolean result = false;
 
         // create a seq
-        s = new Seq();
-        assertNotNull("null Seq returned from constructor", s);
+        s = new SeqLoop();
+        assertNotNull("null SeqLoop returned from constructor", s);
 
         // set start to 2 and stop to 1: should fail
         try
@@ -625,15 +625,15 @@ public class TestSeq extends TestCase
      */
     public void testLoopCount0LoopStartLoopStopNot()
     {
-        Seq s = null;
+        SeqLoop s = null;
         boolean result = false;
 
         // set loopStart to 1 with loopCount set to 0: should fail
         try
         {
             // create a seq
-            s = new Seq();
-            assertNotNull("null Seq returned from constructor", s);
+            s = new SeqLoop();
+            assertNotNull("null SeqLoop returned from constructor", s);
 
             // set the bad vals
             s.setLoopStart(1);
@@ -651,8 +651,8 @@ public class TestSeq extends TestCase
         try
         {
             // create a seq
-            s = new Seq();
-            assertNotNull("null Seq returned from constructor", s);
+            s = new SeqLoop();
+            assertNotNull("null SeqLoop returned from constructor", s);
 
             // set the bad vals
             s.setLoopStop(1);
@@ -671,8 +671,8 @@ public class TestSeq extends TestCase
         try
         {
             // create a seq
-            s = new Seq();
-            assertNotNull("null Seq returned from constructor", s);
+            s = new SeqLoop();
+            assertNotNull("null SeqLoop returned from constructor", s);
 
             // set the bad vals
             s.setLoopStop(1);
@@ -691,8 +691,8 @@ public class TestSeq extends TestCase
         try
         {
             // create a seq
-            s = new Seq();
-            assertNotNull("null Seq returned from constructor", s);
+            s = new SeqLoop();
+            assertNotNull("null SeqLoop returned from constructor", s);
 
             // set the bad vals
             s.setStart(0);
@@ -716,8 +716,8 @@ public class TestSeq extends TestCase
         try
         {
             // create a seq
-            s = new Seq();
-            assertNotNull("null Seq returned from constructor", s);
+            s = new SeqLoop();
+            assertNotNull("null SeqLoop returned from constructor", s);
 
             // set the bad vals
             s.setLoopStop(1);
@@ -739,8 +739,8 @@ public class TestSeq extends TestCase
         try
         {
             // create a seq
-            s = new Seq();
-            assertNotNull("null Seq returned from constructor", s);
+            s = new SeqLoop();
+            assertNotNull("null SeqLoop returned from constructor", s);
 
             // set the bad vals
             s.setLoopStart(1);
@@ -763,16 +763,16 @@ public class TestSeq extends TestCase
 
     /**
      * This does a basic check of the getLength() method, and through it
-     * the Seq internal calculate() method.
+     * the SeqLoop internal calculate() method.
      */
     public void testGetLength()
     {
-        Seq s = null;
+        SeqLoop s = null;
         int length = 0;
 
         // create a seq
-        s = new Seq();
-        assertNotNull("null Seq returned from constructor", s);
+        s = new SeqLoop();
+        assertNotNull("null SeqLoop returned from constructor", s);
 
         // set a simple sequence
         s.setStart(1);
@@ -794,12 +794,12 @@ public class TestSeq extends TestCase
      */
     public void testAscendGetNext()
     {
-        Seq s = null;
+        SeqLoop s = null;
         int length = 0;
 
         // create a seq
-        s = new Seq();
-        assertNotNull("null Seq returned from constructor", s);
+        s = new SeqLoop();
+        assertNotNull("null SeqLoop returned from constructor", s);
 
         // set a simple sequence
         s.setStart(1);
@@ -830,12 +830,12 @@ public class TestSeq extends TestCase
      */
     public void testAscendGet()
     {
-        Seq s = null;
+        SeqLoop s = null;
         int length = 0;
 
         // create a seq
-        s = new Seq();
-        assertNotNull("null Seq returned from constructor", s);
+        s = new SeqLoop();
+        assertNotNull("null SeqLoop returned from constructor", s);
 
         // set a simple sequence
         s.setStart(1);
@@ -862,12 +862,12 @@ public class TestSeq extends TestCase
      */
     public void testDescendGetNext()
     {
-        Seq s = null;
+        SeqLoop s = null;
         int length = 0;
 
         // create a seq
-        s = new Seq();
-        assertNotNull("null Seq returned from constructor", s);
+        s = new SeqLoop();
+        assertNotNull("null SeqLoop returned from constructor", s);
 
         // set a simple sequence
         s.setStart(3);
@@ -898,12 +898,12 @@ public class TestSeq extends TestCase
      */
     public void testDescendGet()
     {
-        Seq s = null;
+        SeqLoop s = null;
         int length = 0;
 
         // create a seq
-        s = new Seq();
-        assertNotNull("null Seq returned from constructor", s);
+        s = new SeqLoop();
+        assertNotNull("null SeqLoop returned from constructor", s);
 
         // set a simple sequence
         s.setStart(3);
@@ -930,12 +930,12 @@ public class TestSeq extends TestCase
      */
     public void testAscendLoop1GetNext()
     {
-        Seq s = null;
+        SeqLoop s = null;
         int length = 0;
 
         // create a seq
-        s = new Seq();
-        assertNotNull("null Seq returned from constructor", s);
+        s = new SeqLoop();
+        assertNotNull("null SeqLoop returned from constructor", s);
 
         // set a simple sequence
         s.setStart(1);
@@ -975,12 +975,12 @@ public class TestSeq extends TestCase
      */
     public void testAscendLoop1Get()
     {
-        Seq s = null;
+        SeqLoop s = null;
         int length = 0;
 
         // create a seq
-        s = new Seq();
-        assertNotNull("null Seq returned from constructor", s);
+        s = new SeqLoop();
+        assertNotNull("null SeqLoop returned from constructor", s);
 
         // set a simple sequence
         s.setStart(1);
@@ -1012,12 +1012,12 @@ public class TestSeq extends TestCase
      */
     public void testDescendLoop1GetNext()
     {
-        Seq s = null;
+        SeqLoop s = null;
         int length = 0;
 
         // create a seq
-        s = new Seq();
-        assertNotNull("null Seq returned from constructor", s);
+        s = new SeqLoop();
+        assertNotNull("null SeqLoop returned from constructor", s);
 
         // set a simple sequence
         s.setStart(3);
@@ -1057,12 +1057,12 @@ public class TestSeq extends TestCase
      */
     public void testDescendLoop1Get()
     {
-        Seq s = null;
+        SeqLoop s = null;
         int length = 0;
 
         // create a seq
-        s = new Seq();
-        assertNotNull("null Seq returned from constructor", s);
+        s = new SeqLoop();
+        assertNotNull("null SeqLoop returned from constructor", s);
 
         // set a simple sequence
         s.setStart(3);
@@ -1094,12 +1094,12 @@ public class TestSeq extends TestCase
      */
     public void testAscendLoop3GetNext()
     {
-        Seq s = null;
+        SeqLoop s = null;
         int length = 0;
 
         // create a seq
-        s = new Seq();
-        assertNotNull("null Seq returned from constructor", s);
+        s = new SeqLoop();
+        assertNotNull("null SeqLoop returned from constructor", s);
 
         // set a simple sequence
         s.setStart(1);
@@ -1153,12 +1153,12 @@ public class TestSeq extends TestCase
      */
     public void testAscendLoop3Get()
     {
-        Seq s = null;
+        SeqLoop s = null;
         int length = 0;
 
         // create a seq
-        s = new Seq();
-        assertNotNull("null Seq returned from constructor", s);
+        s = new SeqLoop();
+        assertNotNull("null SeqLoop returned from constructor", s);
 
         // set a simple sequence
         s.setStart(1);
@@ -1198,12 +1198,12 @@ public class TestSeq extends TestCase
      */
     public void testDescendLoop3GetNext()
     {
-        Seq s = null;
+        SeqLoop s = null;
         int length = 0;
 
         // create a seq
-        s = new Seq();
-        assertNotNull("null Seq returned from constructor", s);
+        s = new SeqLoop();
+        assertNotNull("null SeqLoop returned from constructor", s);
 
         // set a simple sequence
         s.setStart(3);
@@ -1257,12 +1257,12 @@ public class TestSeq extends TestCase
      */
     public void testDescendLoop3Get()
     {
-        Seq s = null;
+        SeqLoop s = null;
         int length = 0;
 
         // create a seq
-        s = new Seq();
-        assertNotNull("null Seq returned from constructor", s);
+        s = new SeqLoop();
+        assertNotNull("null SeqLoop returned from constructor", s);
 
         // set a simple sequence
         s.setStart(3);
@@ -1302,12 +1302,12 @@ public class TestSeq extends TestCase
      */
     public void testAscendLoopStartGetNext()
     {
-        Seq s = null;
+        SeqLoop s = null;
         int length = 0;
 
         // create a seq
-        s = new Seq();
-        assertNotNull("null Seq returned from constructor", s);
+        s = new SeqLoop();
+        assertNotNull("null SeqLoop returned from constructor", s);
 
         // set a simple sequence
         s.setStart(1);
@@ -1350,12 +1350,12 @@ public class TestSeq extends TestCase
      */
     public void testAscendLoopStartGet()
     {
-        Seq s = null;
+        SeqLoop s = null;
         int length = 0;
 
         // create a seq
-        s = new Seq();
-        assertNotNull("null Seq returned from constructor", s);
+        s = new SeqLoop();
+        assertNotNull("null SeqLoop returned from constructor", s);
 
         // set a simple sequence
         s.setStart(1);
@@ -1389,12 +1389,12 @@ public class TestSeq extends TestCase
      */
     public void testAscendLoopStopGetNext()
     {
-        Seq s = null;
+        SeqLoop s = null;
         int length = 0;
 
         // create a seq
-        s = new Seq();
-        assertNotNull("null Seq returned from constructor", s);
+        s = new SeqLoop();
+        assertNotNull("null SeqLoop returned from constructor", s);
 
         // set a simple sequence
         s.setStart(1);
@@ -1438,12 +1438,12 @@ public class TestSeq extends TestCase
      */
     public void testAscendLoopStopGet()
     {
-        Seq s = null;
+        SeqLoop s = null;
         int length = 0;
 
         // create a seq
-        s = new Seq();
-        assertNotNull("null Seq returned from constructor", s);
+        s = new SeqLoop();
+        assertNotNull("null SeqLoop returned from constructor", s);
 
         // set a simple sequence
         s.setStart(1);
@@ -1478,12 +1478,12 @@ public class TestSeq extends TestCase
      */
     public void testAscendLoopStartStopGetNext()
     {
-        Seq s = null;
+        SeqLoop s = null;
         int length = 0;
 
         // create a seq
-        s = new Seq();
-        assertNotNull("null Seq returned from constructor", s);
+        s = new SeqLoop();
+        assertNotNull("null SeqLoop returned from constructor", s);
 
         // set a simple sequence
         s.setStart(1);
@@ -1530,12 +1530,12 @@ public class TestSeq extends TestCase
      */
     public void testAscendLoopStartStopGet()
     {
-        Seq s = null;
+        SeqLoop s = null;
         int length = 0;
 
         // create a seq
-        s = new Seq();
-        assertNotNull("null Seq returned from constructor", s);
+        s = new SeqLoop();
+        assertNotNull("null SeqLoop returned from constructor", s);
 
         // set a simple sequence
         s.setStart(1);
@@ -1572,12 +1572,12 @@ public class TestSeq extends TestCase
      */
     public void testDescendLoopStartGetNext()
     {
-        Seq s = null;
+        SeqLoop s = null;
         int length = 0;
 
         // create a seq
-        s = new Seq();
-        assertNotNull("null Seq returned from constructor", s);
+        s = new SeqLoop();
+        assertNotNull("null SeqLoop returned from constructor", s);
 
         // set a simple sequence
         s.setStart(3);
@@ -1621,12 +1621,12 @@ public class TestSeq extends TestCase
      */
     public void testDescendLoopStartGet()
     {
-        Seq s = null;
+        SeqLoop s = null;
         int length = 0;
 
         // create a seq
-        s = new Seq();
-        assertNotNull("null Seq returned from constructor", s);
+        s = new SeqLoop();
+        assertNotNull("null SeqLoop returned from constructor", s);
 
         // set a simple sequence
         s.setStart(3);
@@ -1661,12 +1661,12 @@ public class TestSeq extends TestCase
      */
     public void testDescendLoopStopGetNext()
     {
-        Seq s = null;
+        SeqLoop s = null;
         int length = 0;
 
         // create a seq
-        s = new Seq();
-        assertNotNull("null Seq returned from constructor", s);
+        s = new SeqLoop();
+        assertNotNull("null SeqLoop returned from constructor", s);
 
         // set a simple sequence
         s.setStart(3);
@@ -1710,12 +1710,12 @@ public class TestSeq extends TestCase
      */
     public void testDescendLoopStopGet()
     {
-        Seq s = null;
+        SeqLoop s = null;
         int length = 0;
 
         // create a seq
-        s = new Seq();
-        assertNotNull("null Seq returned from constructor", s);
+        s = new SeqLoop();
+        assertNotNull("null SeqLoop returned from constructor", s);
 
         // set a simple sequence
         s.setStart(3);
@@ -1750,12 +1750,12 @@ public class TestSeq extends TestCase
      */
     public void testDescendLoopStartStopGetNext()
     {
-        Seq s = null;
+        SeqLoop s = null;
         int length = 0;
 
         // create a seq
-        s = new Seq();
-        assertNotNull("null Seq returned from constructor", s);
+        s = new SeqLoop();
+        assertNotNull("null SeqLoop returned from constructor", s);
 
         // set a simple sequence
         s.setStart(3);
@@ -1802,12 +1802,12 @@ public class TestSeq extends TestCase
      */
     public void testDescendLoopStartStopGet()
     {
-        Seq s = null;
+        SeqLoop s = null;
         int length = 0;
 
         // create a seq
-        s = new Seq();
-        assertNotNull("null Seq returned from constructor", s);
+        s = new SeqLoop();
+        assertNotNull("null SeqLoop returned from constructor", s);
 
         // set a simple sequence
         s.setStart(3);
@@ -1843,7 +1843,7 @@ public class TestSeq extends TestCase
      */
     public void testBadDocumentConstructor()
     {
-        Seq s = null;
+        SeqLoop s = null;
         SAXBuilder builder = new SAXBuilder();
         Document doc = null;
 
@@ -1859,7 +1859,7 @@ public class TestSeq extends TestCase
             doc = builder.build( new CharArrayReader(xml.toCharArray()) );
 
             // create a seq from the document
-            s = new Seq(doc);
+            s = new SeqLoop(doc);
 
             // if we get here, that's bad
             assertNotNull("non seq construction succeeded", null);
@@ -1883,7 +1883,7 @@ public class TestSeq extends TestCase
             doc = builder.build( new CharArrayReader(xml.toCharArray()) );
 
             // create a seq from the document
-            s = new Seq(doc);
+            s = new SeqLoop(doc);
 
             // if we get here, that's bad
             assertNotNull("seq with child construction succeeded", null);
@@ -1907,7 +1907,7 @@ public class TestSeq extends TestCase
             doc = builder.build( new CharArrayReader(xml.toCharArray()) );
 
             // create a seq from the document
-            s = new Seq(doc);
+            s = new SeqLoop(doc);
 
             // if we get here, that's bad
             assertNotNull("seq with bad att name construction succeeded", null);
@@ -1931,7 +1931,7 @@ public class TestSeq extends TestCase
             doc = builder.build( new CharArrayReader(xml.toCharArray()) );
 
             // create a seq from the document
-            s = new Seq(doc);
+            s = new SeqLoop(doc);
 
             // if we get here, that's bad
             assertNotNull("seq with bad att value construction succeeded",null);
@@ -1950,7 +1950,7 @@ public class TestSeq extends TestCase
      */
     public void testGoodDocumentConstructor()
     {
-        Seq s = null;
+        SeqLoop s = null;
         SAXBuilder builder = new SAXBuilder();
         Document doc = null;
 
@@ -1966,7 +1966,7 @@ public class TestSeq extends TestCase
             doc = builder.build( new CharArrayReader(xml.toCharArray()) );
 
             // create a seq from the document
-            s = new Seq(doc);
+            s = new SeqLoop(doc);
 
             // check that we got a valid seq, with the correct values
             assertNotNull("got null seq", s);
@@ -1989,7 +1989,7 @@ public class TestSeq extends TestCase
             doc = builder.build( new CharArrayReader(xml.toCharArray()) );
 
             // create a seq from the document
-            s = new Seq(doc);
+            s = new SeqLoop(doc);
 
             // check that we got a valid seq, with the correct values
             assertNotNull("got null seq", s);
@@ -2012,7 +2012,7 @@ public class TestSeq extends TestCase
             doc = builder.build( new CharArrayReader(xml.toCharArray()) );
 
             // create a seq from the document
-            s = new Seq(doc);
+            s = new SeqLoop(doc);
 
             // check that we got a valid seq, with the correct values
             assertNotNull("got null seq", s);
@@ -2035,7 +2035,7 @@ public class TestSeq extends TestCase
             doc = builder.build( new CharArrayReader(xml.toCharArray()) );
 
             // create a seq from the document
-            s = new Seq(doc);
+            s = new SeqLoop(doc);
 
             // check that we got a valid seq, with the correct values
             assertNotNull("got null seq", s);
@@ -2058,7 +2058,7 @@ public class TestSeq extends TestCase
             doc = builder.build( new CharArrayReader(xml.toCharArray()) );
 
             // create a seq from the document
-            s = new Seq(doc);
+            s = new SeqLoop(doc);
 
             // check that we got a valid seq, with the correct values
             assertNotNull("got null seq", s);
@@ -2081,7 +2081,7 @@ public class TestSeq extends TestCase
             doc = builder.build( new CharArrayReader(xml.toCharArray()) );
 
             // create a seq from the document
-            s = new Seq(doc);
+            s = new SeqLoop(doc);
 
             // check that we got a valid seq, with the correct values
             assertNotNull("got null seq", s);
@@ -2104,7 +2104,7 @@ public class TestSeq extends TestCase
             doc = builder.build( new CharArrayReader(xml.toCharArray()) );
 
             // create a seq from the document
-            s = new Seq(doc);
+            s = new SeqLoop(doc);
 
             // check that we got a valid seq, with the correct values
             assertNotNull("got null seq", s);
@@ -2136,7 +2136,7 @@ public class TestSeq extends TestCase
             doc = builder.build( new CharArrayReader(xml.toCharArray()) );
 
             // create a seq from the document
-            Seq s = new Seq(doc);
+            SeqLoop s = new SeqLoop(doc);
 
             // check that we got a valid seq, with the correct values
             assertNotNull("got null seq", s);
@@ -2180,7 +2180,7 @@ public class TestSeq extends TestCase
             doc = builder.build( new CharArrayReader(xml.toCharArray()) );
 
             // create a seq from the document
-            Seq s = new Seq(doc);
+            SeqLoop s = new SeqLoop(doc);
 
             // check that we got a valid seq, with the correct values
             assertNotNull("got null seq", s);
@@ -2227,7 +2227,7 @@ public class TestSeq extends TestCase
             doc = builder.build( new CharArrayReader(xml.toCharArray()) );
 
             // create a seq from the document
-            Seq s = new Seq(doc);
+            SeqLoop s = new SeqLoop(doc);
 
             // check that we got a valid seq, with the correct values
             assertNotNull("got null seq", s);

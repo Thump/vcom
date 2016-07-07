@@ -27,6 +27,7 @@ import org.jdom.input.SAXBuilder;
 
 import net.vcom.ImageClip;
 import net.vcom.Seq;
+import net.vcom.SeqLoop;
 
 
 /**
@@ -54,14 +55,14 @@ public class TestImageClip extends TestCase
     {
         ImageClip ic = null;
         DirectoryScanner scanner = new DirectoryScanner();
-        Seq sourceSeq = new Seq();
+        Seq sourceSeq = new SeqLoop();
         int targetStart = 1;
-        Seq xPosition = new Seq();
-        Seq yPosition = new Seq();
-        Seq rotation = new Seq();
-        Seq opacity = new Seq();
-        Seq xSize = new Seq();
-        Seq ySize = new Seq();
+        Seq xPosition = new SeqLoop();
+        Seq yPosition = new SeqLoop();
+        Seq rotation = new SeqLoop();
+        Seq opacity = new SeqLoop();
+        Seq xSize = new SeqLoop();
+        Seq ySize = new SeqLoop();
 
         // check we can construct a new ImageClip
         ic = new ImageClip();
